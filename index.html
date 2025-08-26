@@ -26,6 +26,7 @@
                 <a href="#fire-simulation" class="nav-link">Simulation</a>
                 <a href="#alerts" class="nav-link">Alerts & Evacuation</a>
                 <a href="#resource-optimization" class="nav-link">Resource Optimization</a>
+                <a href="#environmental-impact" class="nav-link">Environmental Impact</a>
                 <a href="#data-sources" class="nav-link">Data Sources</a>
                 <a href="#analytics" class="nav-link">Analytics</a>
             </nav>
@@ -1029,6 +1030,271 @@
                             <div class="availability-item maintenance">
                                 <span class="availability-dot"></span>
                                 <span>Maintenance: <strong id="maintenanceResources">2</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Environmental Impact Section -->
+    <section id="environmental-impact" class="section">
+        <div class="section-header">
+            <h2>Environmental Impact Assessment</h2>
+            <p>CO₂ Emissions & Long-term Ecological Impact Estimation</p>
+        </div>
+        <div class="section-content">
+            <div class="environmental-overview">
+                <!-- Carbon Emissions Analysis -->
+                <div class="environmental-card carbon-emissions">
+                    <div class="card-header">
+                        <h3><i class="fas fa-cloud"></i> Carbon Emissions Analysis</h3>
+                        <button class="action-btn" onclick="calculateCarbonEmissions()">
+                            <i class="fas fa-calculator"></i>
+                            Calculate Emissions
+                        </button>
+                    </div>
+                    <div class="emissions-summary">
+                        <div class="emission-stat primary">
+                            <div class="stat-icon">
+                                <i class="fas fa-smog"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-number" id="totalCO2Emissions">0</span>
+                                <span class="stat-label">Tonnes CO₂</span>
+                            </div>
+                        </div>
+                        <div class="emission-stat">
+                            <div class="stat-icon">
+                                <i class="fas fa-car"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-number" id="carEquivalent">0</span>
+                                <span class="stat-label">Car Years Equivalent</span>
+                            </div>
+                        </div>
+                        <div class="emission-stat">
+                            <div class="stat-icon">
+                                <i class="fas fa-tree"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-number" id="treesNeeded">0</span>
+                                <span class="stat-label">Trees to Offset</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="emissions-breakdown">
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">CO₂ Emissions</span>
+                            <span class="breakdown-value" id="co2Breakdown">0 kg</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">CH₄ Emissions</span>
+                            <span class="breakdown-value" id="ch4Breakdown">0 kg</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">N₂O Emissions</span>
+                            <span class="breakdown-value" id="n2oBreakdown">0 kg</span>
+                        </div>
+                        <div class="breakdown-item total">
+                            <span class="breakdown-label">CO₂ Equivalent</span>
+                            <span class="breakdown-value" id="co2Equivalent">0 kg</span>
+                        </div>
+                    </div>
+                    <div class="emissions-chart-container">
+                        <canvas id="emissionsChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Ecological Impact Analysis -->
+                <div class="environmental-card ecological-impact">
+                    <div class="card-header">
+                        <h3><i class="fas fa-leaf"></i> Ecological Impact Prediction</h3>
+                        <button class="action-btn" onclick="calculateEcologicalImpact()">
+                            <i class="fas fa-seedling"></i>
+                            Assess Impact
+                        </button>
+                    </div>
+                    <div class="impact-categories">
+                        <div class="impact-category flora">
+                            <div class="category-header">
+                                <i class="fas fa-tree"></i>
+                                <h4>Flora Impact</h4>
+                            </div>
+                            <div class="impact-metrics">
+                                <div class="metric">
+                                    <span class="metric-label">Vegetation Mortality</span>
+                                    <span class="metric-value" id="vegetationMortality">0%</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-label">Trees Lost</span>
+                                    <span class="metric-value" id="treesLost">0</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-label">Canopy Cover Loss</span>
+                                    <span class="metric-value" id="canopyLoss">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="impact-category fauna">
+                            <div class="category-header">
+                                <i class="fas fa-paw"></i>
+                                <h4>Fauna Impact</h4>
+                            </div>
+                            <div class="impact-metrics">
+                                <div class="metric">
+                                    <span class="metric-label">Habitat Loss</span>
+                                    <span class="metric-value" id="habitatLoss">0%</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-label">Wildlife Displacement</span>
+                                    <span class="metric-value" id="wildlifeDisplacement">0%</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-label">Estimated Casualties</span>
+                                    <span class="metric-value" id="wildlifeCasualties">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="impact-category biodiversity">
+                            <div class="category-header">
+                                <i class="fas fa-globe-americas"></i>
+                                <h4>Biodiversity Impact</h4>
+                            </div>
+                            <div class="impact-metrics">
+                                <div class="metric">
+                                    <span class="metric-label">Biodiversity Loss</span>
+                                    <span class="metric-value" id="biodiversityLoss">0%</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-label">Species Richness Reduction</span>
+                                    <span class="metric-value" id="speciesReduction">0%</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-label">Fragmentation Level</span>
+                                    <span class="metric-value" id="fragmentationLevel">Low</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recovery Timeline -->
+                <div class="environmental-card recovery-timeline">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line"></i> Recovery Timeline</h3>
+                    </div>
+                    <div class="recovery-chart-container">
+                        <canvas id="recoveryTimelineChart"></canvas>
+                    </div>
+                    <div class="recovery-estimates">
+                        <div class="recovery-item">
+                            <div class="recovery-icon">
+                                <i class="fas fa-tree"></i>
+                            </div>
+                            <div class="recovery-info">
+                                <span class="recovery-label">Canopy Cover</span>
+                                <span class="recovery-time" id="canopyRecovery">0 years</span>
+                            </div>
+                        </div>
+                        <div class="recovery-item">
+                            <div class="recovery-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div class="recovery-info">
+                                <span class="recovery-label">Biodiversity</span>
+                                <span class="recovery-time" id="biodiversityRecovery">0 years</span>
+                            </div>
+                        </div>
+                        <div class="recovery-item">
+                            <div class="recovery-icon">
+                                <i class="fas fa-mountain"></i>
+                            </div>
+                            <div class="recovery-info">
+                                <span class="recovery-label">Soil Restoration</span>
+                                <span class="recovery-time" id="soilRecovery">0 years</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Economic Impact -->
+                <div class="environmental-card economic-impact">
+                    <div class="card-header">
+                        <h3><i class="fas fa-dollar-sign"></i> Economic Impact Assessment</h3>
+                    </div>
+                    <div class="economic-summary">
+                        <div class="economic-stat primary">
+                            <div class="stat-icon">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-number" id="annualEconomicLoss">$0</span>
+                                <span class="stat-label">Annual Service Loss</span>
+                            </div>
+                        </div>
+                        <div class="economic-stat">
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-number" id="twentyYearImpact">$0</span>
+                                <span class="stat-label">20-Year Impact</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ecosystem-services">
+                        <div class="service-item">
+                            <span class="service-label">Carbon Sequestration</span>
+                            <span class="service-value" id="carbonSequestrationLoss">$0</span>
+                        </div>
+                        <div class="service-item">
+                            <span class="service-label">Water Regulation</span>
+                            <span class="service-value" id="waterRegulationLoss">$0</span>
+                        </div>
+                        <div class="service-item">
+                            <span class="service-label">Biodiversity Conservation</span>
+                            <span class="service-value" id="biodiversityConservationLoss">$0</span>
+                        </div>
+                        <div class="service-item">
+                            <span class="service-label">Recreation & Tourism</span>
+                            <span class="service-value" id="recreationLoss">$0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Impact Severity Gauge -->
+                <div class="environmental-card impact-severity">
+                    <div class="card-header">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Overall Impact Severity</h3>
+                    </div>
+                    <div class="severity-gauge-container">
+                        <canvas id="impactSeverityGauge"></canvas>
+                        <div class="severity-indicator">
+                            <div class="severity-level" id="severityLevel">Calculating...</div>
+                            <div class="severity-description" id="severityDescription">Impact assessment in progress</div>
+                        </div>
+                    </div>
+                    <div class="severity-breakdown">
+                        <div class="severity-factor">
+                            <span class="factor-label">Flora Impact</span>
+                            <div class="factor-bar">
+                                <div class="factor-fill flora-fill" id="floraImpactBar"></div>
+                            </div>
+                        </div>
+                        <div class="severity-factor">
+                            <span class="factor-label">Fauna Impact</span>
+                            <div class="factor-bar">
+                                <div class="factor-fill fauna-fill" id="faunaImpactBar"></div>
+                            </div>
+                        </div>
+                        <div class="severity-factor">
+                            <span class="factor-label">Biodiversity Impact</span>
+                            <div class="factor-bar">
+                                <div class="factor-fill biodiversity-fill" id="biodiversityImpactBar"></div>
                             </div>
                         </div>
                     </div>

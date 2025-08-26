@@ -2504,6 +2504,415 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 2000);
 });
 
+// Environmental Impact Calculation Functions
+let environmentalImpactData = {};
+
+async function calculateCarbonEmissions() {
+    showToast('Calculating carbon emissions...', 'processing', 2000);
+    
+    try {
+        // Get current environmental data and fire parameters
+        const fireData = {
+            burned_area_hectares: 25.5, // Example data - in real implementation, get from simulation
+            vegetation_type: 'mixed',
+            fire_intensity: 'moderate_intensity',
+            temperature: getElementValue('temperature', 32),
+            humidity: getElementValue('humidity', 45),
+            wind_speed: getElementValue('wind-speed', 15)
+        };
+        
+        const response = await fetch(`${ML_API_BASE}/api/environmental/carbon-calculator`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(fireData)
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            if (result.success) {
+                updateCarbonEmissionsDisplay(result.carbon_emissions);
+                showToast('Carbon emissions calculated successfully!', 'success');
+            }
+        } else {
+            throw new Error('API request failed');
+        }
+    } catch (error) {
+        console.warn('Carbon emissions API not available, using fallback calculations');
+        const fallbackEmissions = calculateFallbackCarbonEmissions();
+        updateCarbonEmissionsDisplay(fallbackEmissions);
+        showToast('Carbon emissions calculated (simulated data)', 'warning');
+    }
+}
+
+async function calculateEcologicalImpact() {
+    showToast('Assessing ecological impact...', 'processing', 2000);
+    
+    try {
+        const fireData = {
+            burned_area_hectares: 25.5,
+            vegetation_type: 'mixed',
+            fire_intensity: 'moderate_intensity',
+            ecosystem_data: {}
+        };
+        
+        const response = await fetch(`${ML_API_BASE}/api/environmental/ecological-impact`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(fireData)
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            if (result.success) {
+                updateEcologicalImpactDisplay(result.ecological_impact);
+                showToast('Ecological impact assessment completed!', 'success');
+            }
+        } else {
+            throw new Error('API request failed');
+        }
+    } catch (error) {
+        console.warn('Ecological impact API not available, using fallback calculations');
+        const fallbackImpact = calculateFallbackEcologicalImpact();
+        updateEcologicalImpactDisplay(fallbackImpact);
+        showToast('Ecological impact assessed (simulated data)', 'warning');
+    }
+}
+
+async function calculateComprehensiveEnvironmentalImpact() {
+    showToast('Calculating comprehensive environmental impact...', 'processing', 3000);
+    
+    try {
+        const fireData = {
+            burned_area_hectares: 25.5,
+            vegetation_type: 'mixed',
+            fire_intensity: 'moderate_intensity',
+            temperature: getElementValue('temperature', 32),
+            humidity: getElementValue('humidity', 45),
+            wind_speed: getElementValue('wind-speed', 15),
+            ecosystem_data: {}
+        };
+        
+        const response = await fetch(`${ML_API_BASE}/api/environmental/impact`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(fireData)
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            if (result.success) {
+                environmentalImpactData = result.environmental_impact;
+                updateComprehensiveEnvironmentalDisplay(result.environmental_impact);
+                showToast('Comprehensive environmental impact calculated!', 'success');
+            }
+        } else {
+            throw new Error('API request failed');
+        }
+    } catch (error) {
+        console.warn('Environmental impact API not available, using fallback calculations');
+        const fallbackData = calculateFallbackComprehensiveImpact();
+        environmentalImpactData = fallbackData;
+        updateComprehensiveEnvironmentalDisplay(fallbackData);
+        showToast('Environmental impact calculated (simulated data)', 'warning');
+    }
+}
+
+function calculateFallbackCarbonEmissions() {
+    const burnedArea = 25.5;
+    const co2Tonnes = burnedArea * 39.5; // Approximate emission factor
+    
+    return {
+        co2_emissions_kg: co2Tonnes * 1000,
+        co2_emissions_tonnes: co2Tonnes,
+        ch4_emissions_kg: co2Tonnes * 5,
+        n2o_emissions_kg: co2Tonnes * 1,
+        total_co2_equivalent: co2Tonnes * 1000 * 1.1,
+        biomass_burned_kg: burnedArea * 25000
+    };
+}
+
+function calculateFallbackEcologicalImpact() {
+    return {
+        flora_impact: {
+            vegetation_mortality_rate: 65.2,
+            estimated_trees_lost: 1632,
+            canopy_cover_loss_percent: 58.7,
+            rare_species_risk: 'moderate'
+        },
+        fauna_impact: {
+            habitat_loss_percent: 42.3,
+            wildlife_displacement_rate: 78.5,
+            estimated_wildlife_casualties: 387,
+            endangered_species_risk: 'high'
+        },
+        biodiversity_impact: {
+            biodiversity_loss_percent: 35.8,
+            species_richness_reduction: 28.6,
+            ecosystem_fragmentation: 'moderate',
+            genetic_diversity_impact: 'moderate'
+        },
+        recovery_timeline: {
+            canopy_cover: 15.2,
+            biodiversity: 18.7,
+            soil_organic_matter: 12.4
+        },
+        economic_impact: {
+            annual_ecosystem_service_loss_usd: 127500,
+            twenty_year_impact_usd: 2550000,
+            service_breakdown: {
+                carbon_sequestration: 19125,
+                water_regulation: 25500,
+                biodiversity_conservation: 38250,
+                recreation_tourism: 31875,
+                timber_value: 12750
+            }
+        },
+        overall_severity: 'moderate'
+    };
+}
+
+function calculateFallbackComprehensiveImpact() {
+    const carbonEmissions = calculateFallbackCarbonEmissions();
+    const ecologicalImpact = calculateFallbackEcologicalImpact();
+    
+    return {
+        carbon_emissions: carbonEmissions,
+        ecological_impact: ecologicalImpact,
+        summary: {
+            total_co2_tonnes: carbonEmissions.co2_emissions_tonnes,
+            equivalent_car_emissions_years: Math.round(carbonEmissions.co2_emissions_tonnes / 4.6),
+            trees_needed_to_offset: Math.round(carbonEmissions.co2_emissions_tonnes * 40),
+            overall_ecological_severity: ecologicalImpact.overall_severity,
+            recovery_time_estimate_years: ecologicalImpact.recovery_timeline.biodiversity,
+            economic_impact_20_years: ecologicalImpact.economic_impact.twenty_year_impact_usd
+        }
+    };
+}
+
+function updateCarbonEmissionsDisplay(emissions) {
+    // Update main carbon emissions stats
+    updateElementText('totalCO2Emissions', emissions.co2_emissions_tonnes.toFixed(1));
+    updateElementText('carEquivalent', Math.round(emissions.co2_emissions_tonnes / 4.6));
+    updateElementText('treesNeeded', Math.round(emissions.co2_emissions_tonnes * 40).toLocaleString());
+    
+    // Update breakdown
+    updateElementText('co2Breakdown', emissions.co2_emissions_kg.toLocaleString() + ' kg');
+    updateElementText('ch4Breakdown', emissions.ch4_emissions_kg.toFixed(1) + ' kg');
+    updateElementText('n2oBreakdown', emissions.n2o_emissions_kg.toFixed(1) + ' kg');
+    updateElementText('co2Equivalent', emissions.total_co2_equivalent.toLocaleString() + ' kg');
+    
+    // Initialize emissions chart
+    initializeEmissionsChart(emissions);
+}
+
+function updateEcologicalImpactDisplay(impact) {
+    // Flora impact
+    updateElementText('vegetationMortality', impact.flora_impact.vegetation_mortality_rate + '%');
+    updateElementText('treesLost', impact.flora_impact.estimated_trees_lost.toLocaleString());
+    updateElementText('canopyLoss', impact.flora_impact.canopy_cover_loss_percent + '%');
+    
+    // Fauna impact
+    updateElementText('habitatLoss', impact.fauna_impact.habitat_loss_percent + '%');
+    updateElementText('wildlifeDisplacement', impact.fauna_impact.wildlife_displacement_rate + '%');
+    updateElementText('wildlifeCasualties', impact.fauna_impact.estimated_wildlife_casualties.toLocaleString());
+    
+    // Biodiversity impact
+    updateElementText('biodiversityLoss', impact.biodiversity_impact.biodiversity_loss_percent + '%');
+    updateElementText('speciesReduction', impact.biodiversity_impact.species_richness_reduction + '%');
+    updateElementText('fragmentationLevel', impact.biodiversity_impact.ecosystem_fragmentation);
+    
+    // Recovery timeline
+    updateElementText('canopyRecovery', impact.recovery_timeline.canopy_cover + ' years');
+    updateElementText('biodiversityRecovery', impact.recovery_timeline.biodiversity + ' years');
+    updateElementText('soilRecovery', impact.recovery_timeline.soil_organic_matter + ' years');
+    
+    // Economic impact
+    updateElementText('annualEconomicLoss', '$' + impact.economic_impact.annual_ecosystem_service_loss_usd.toLocaleString());
+    updateElementText('twentyYearImpact', '$' + impact.economic_impact.twenty_year_impact_usd.toLocaleString());
+    
+    // Service breakdown
+    const services = impact.economic_impact.service_breakdown;
+    updateElementText('carbonSequestrationLoss', '$' + services.carbon_sequestration.toLocaleString());
+    updateElementText('waterRegulationLoss', '$' + services.water_regulation.toLocaleString());
+    updateElementText('biodiversityConservationLoss', '$' + services.biodiversity_conservation.toLocaleString());
+    updateElementText('recreationLoss', '$' + services.recreation_tourism.toLocaleString());
+    
+    // Initialize charts
+    initializeRecoveryTimelineChart(impact.recovery_timeline);
+    initializeImpactSeverityGauge(impact);
+}
+
+function updateComprehensiveEnvironmentalDisplay(data) {
+    updateCarbonEmissionsDisplay(data.carbon_emissions);
+    updateEcologicalImpactDisplay(data.ecological_impact);
+    
+    // Update severity level
+    const severity = data.ecological_impact.overall_severity;
+    updateElementText('severityLevel', severity.charAt(0).toUpperCase() + severity.slice(1));
+    
+    const descriptions = {
+        'low': 'Minimal long-term ecological impact expected',
+        'moderate': 'Significant but recoverable ecological impact',
+        'severe': 'Major ecological damage with extended recovery period',
+        'catastrophic': 'Devastating ecological impact requiring intensive restoration'
+    };
+    
+    updateElementText('severityDescription', descriptions[severity] || 'Impact assessment completed');
+}
+
+function initializeEmissionsChart(emissions) {
+    const ctx = document.getElementById('emissionsChart');
+    if (!ctx) return;
+    
+    new Chart(ctx.getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: ['CO₂', 'CH₄ (CO₂ eq)', 'N₂O (CO₂ eq)', 'Other'],
+            datasets: [{
+                data: [
+                    emissions.co2_emissions_kg,
+                    emissions.ch4_emissions_kg * 25, // CH₄ global warming potential
+                    emissions.n2o_emissions_kg * 298, // N₂O global warming potential
+                    emissions.total_co2_equivalent - emissions.co2_emissions_kg - (emissions.ch4_emissions_kg * 25) - (emissions.n2o_emissions_kg * 298)
+                ],
+                backgroundColor: ['#ff6b35', '#ffa726', '#66bb6a', '#42a5f5'],
+                borderWidth: 2,
+                borderColor: '#1a1a2e'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#ffffff',
+                        padding: 10,
+                        font: { size: 10 }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: '#ffffff',
+                    bodyColor: '#ffffff',
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + (context.parsed / 1000).toFixed(1) + ' tonnes CO₂ eq';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function initializeRecoveryTimelineChart(timeline) {
+    const ctx = document.getElementById('recoveryTimelineChart');
+    if (!ctx) return;
+    
+    new Chart(ctx.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: ['Canopy Cover', 'Biodiversity', 'Soil Health'],
+            datasets: [{
+                label: 'Recovery Time (Years)',
+                data: [timeline.canopy_cover, timeline.biodiversity, timeline.soil_organic_matter],
+                backgroundColor: ['#66bb6a', '#42a5f5', '#ffa726'],
+                borderColor: ['#4caf50', '#2196f3', '#ff9800'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: { color: '#ffffff', font: { size: 10 } }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: '#ffffff', font: { size: 10 } },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                },
+                y: {
+                    ticks: { 
+                        color: '#ffffff', 
+                        font: { size: 10 },
+                        callback: function(value) {
+                            return value + ' years';
+                        }
+                    },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                }
+            }
+        }
+    });
+}
+
+function initializeImpactSeverityGauge(impact) {
+    const ctx = document.getElementById('impactSeverityGauge');
+    if (!ctx) return;
+    
+    const severityScore = (
+        impact.flora_impact.vegetation_mortality_rate +
+        impact.fauna_impact.wildlife_displacement_rate +
+        impact.biodiversity_impact.biodiversity_loss_percent
+    ) / 3;
+    
+    new Chart(ctx.getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [severityScore, 100 - severityScore],
+                backgroundColor: [
+                    severityScore > 70 ? '#ef4444' : severityScore > 50 ? '#ffa726' : severityScore > 30 ? '#66bb6a' : '#10b981',
+                    'rgba(255, 255, 255, 0.1)'
+                ],
+                borderWidth: 0,
+                cutout: '75%'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false }
+            }
+        }
+    });
+    
+    // Update severity factor bars
+    updateElementStyle('floraImpactBar', 'width', impact.flora_impact.vegetation_mortality_rate + '%');
+    updateElementStyle('faunaImpactBar', 'width', impact.fauna_impact.wildlife_displacement_rate + '%');
+    updateElementStyle('biodiversityImpactBar', 'width', impact.biodiversity_impact.biodiversity_loss_percent + '%');
+}
+
+function updateElementStyle(id, property, value) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.style[property] = value;
+    }
+}
+
+// Automatically calculate environmental impact when simulation starts
+document.addEventListener('DOMContentLoaded', function() {
+    // Add existing initialization code here
+    
+    // Initialize environmental impact calculations after a delay
+    setTimeout(() => {
+        calculateComprehensiveEnvironmentalImpact();
+    }, 3000);
+});
+
 // Enhanced keyboard shortcuts
 document.addEventListener('keydown', function(e) {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -2522,6 +2931,11 @@ document.addEventListener('keydown', function(e) {
     if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
         e.preventDefault();
         downloadReport();
+    }
+    
+    if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+        e.preventDefault();
+        calculateComprehensiveEnvironmentalImpact();
     }
 });
 

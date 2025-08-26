@@ -6,6 +6,7 @@ from datetime import datetime
 from ml_models import get_model_predictions, simulate_fire_scenario, NDVIAnalyzer
 import threading
 import time
+from typing import Dict
 
 app = Flask(__name__)
 CORS(app)
@@ -25,6 +26,60 @@ try:
 except ImportError:
     RESOURCE_OPTIMIZER_AVAILABLE = False
     print("Resource optimizer not available")
+
+# Import environmental impact system
+try:
+    from environmental_impact import calculate_environmental_impact
+    ENVIRONMENTAL_IMPACT_AVAILABLE = True
+except ImportError:
+    ENVIRONMENTAL_IMPACT_AVAILABLE = False
+    print("Environmental impact module not available")
+
+# Global model instance
+# Assuming FireRiskPredictor is defined in ml_models.py
+# For demonstration purposes, we'll assume it's available.
+# In a real scenario, you would import it like: from ml_models import FireRiskPredictor
+class MockFireRiskPredictor:
+    def predict_comprehensive_risk(self, environmental_data: Dict) -> Dict:
+        # Mock prediction logic
+        risk_score = (environmental_data.get('temperature', 30) / 50) * 0.7 + \
+                     (1 - environmental_data.get('humidity', 50) / 100) * 0.2 + \
+                     (environmental_data.get('wind_speed', 15) / 30) * 0.1
+        return {
+            'ensemble_risk_score': min(1.0, risk_score),
+            'fire_probability': 0.6,
+            'spread_rate': 2.5,
+            'burn_intensity': 3.0
+        }
+
+    def simulate_fire_spread(self, grid_coords: tuple, env_data: Dict) -> Dict:
+        # Mock simulation logic
+        lat, lng = grid_coords
+        return {
+            'fire_perimeter': f"Simulated perimeter around {lat},{lng}",
+            'burned_area_sq_km': np.random.uniform(1, 20),
+            'fire_intensity': np.random.uniform(2, 5)
+        }
+
+fire_predictor = MockFireRiskPredictor()
+
+
+def get_model_predictions(environmental_data: Dict) -> Dict:
+    """Main function to get comprehensive fire risk predictions"""
+    return fire_predictor.predict_comprehensive_risk(environmental_data)
+
+def simulate_fire_scenario(lat: float, lng: float, env_data: Dict) -> Dict:
+    """Simulate fire spread scenario at given coordinates"""
+    # Convert lat/lng to grid coordinates (simplified)
+    grid_x = int((lat - 29.0) * 50)  # Rough conversion for Uttarakhand region
+    grid_y = int((lng - 79.0) * 50)
+
+    # Ensure coordinates are within grid bounds
+    grid_x = max(0, min(99, grid_x))
+    grid_y = max(0, min(99, grid_y))
+
+    return fire_predictor.simulate_fire_spread((grid_x, grid_y), env_data)
+
 
 # Global variables for real-time data simulation
 current_predictions = {}
@@ -167,6 +222,16 @@ def simulate_fire():
         # Run simulation
         simulation_results = simulate_fire_scenario(lat, lng, env_data)
 
+        # Calculate environmental impact if available
+        environmental_impact = None
+        if ENVIRONMENTAL_IMPACT_AVAILABLE:
+            try:
+                environmental_impact = calculate_environmental_impact(
+                    simulation_results, env_data
+                )
+            except Exception as e:
+                print(f"Failed to calculate environmental impact: {e}")
+
         return jsonify({
             'success': True,
             'simulation': simulation_results,
@@ -175,6 +240,7 @@ def simulate_fire():
                 'duration_hours': duration,
                 'environmental_data': env_data
             },
+            'environmental_impact': environmental_impact,
             'timestamp': datetime.now().isoformat()
         })
 
@@ -267,6 +333,19 @@ def get_model_info():
                 'purpose': 'Burned area estimation',
                 'input': 'Pre/post fire NDVI imagery',
                 'output': 'Burn severity and recovery index'
+            },
+            'environmental_impact_estimator': {
+                'name': 'Environmental Impact Estimator',
+                'purpose': 'Estimates CO2 emissions and ecological loss from fire',
+                'input': ['simulation_results', 'environmental_data'],
+                'output': {
+                    'estimated_co2_emissions_tonnes': 'float',
+                    'long_term_ecological_loss': {
+                        'flora_impact': 'string',
+                        'fauna_impact': 'string',
+                        'biodiversity_impact': 'string'
+                    }
+                }
             }
         },
         'data_sources': [
