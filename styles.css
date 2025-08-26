@@ -1028,6 +1028,196 @@ body::after {
     align-items: start;
 }
 
+/* Evacuation Route Styles */
+.evacuation-controls {
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 8px;
+    padding: 8px;
+    margin: 10px;
+}
+
+.evacuation-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 107, 53, 0.2);
+    border: 1px solid rgba(255, 107, 53, 0.4);
+    color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 4px;
+    width: 100%;
+}
+
+.evacuation-btn:hover {
+    background: rgba(255, 107, 53, 0.4);
+    border-color: rgba(255, 107, 53, 0.6);
+    transform: translateY(-2px);
+}
+
+.evacuation-btn i {
+    font-size: 0.9rem;
+}
+
+.evacuation-popup {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(26, 26, 46, 0.9));
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    border-radius: 8px;
+    padding: 12px;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    min-width: 200px;
+}
+
+.evacuation-popup h4 {
+    color: #ff6b35;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.evacuation-popup p {
+    margin: 4px 0;
+    font-size: 0.85rem;
+    color: #E2E8F0;
+}
+
+.evacuation-popup strong {
+    color: #F8FAFC;
+}
+
+.fire-evacuation-marker {
+    background: radial-gradient(circle, rgba(255, 68, 68, 0.8), transparent);
+    border-radius: 50%;
+    animation: evacuationPulse 2s infinite;
+}
+
+@keyframes evacuationPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 68, 68, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 68, 68, 0);
+    }
+}
+
+.safe-zone-marker {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #10b981;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.safe-zone-marker.hospital {
+    border-color: #ef4444;
+}
+
+.safe-zone-marker.school {
+    border-color: #3b82f6;
+}
+
+.safe-zone-marker.government {
+    border-color: #10b981;
+}
+
+.safe-zone-marker.transport {
+    border-color: #f59e0b;
+}
+
+.evacuation-panel {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.evacuation-panel h3 {
+    color: #ff6b35;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+}
+
+.evacuation-routes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.evacuation-route-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 12px;
+    border-left: 4px solid;
+}
+
+.evacuation-route-item.primary {
+    border-left-color: #10b981;
+}
+
+.evacuation-route-item.secondary {
+    border-left-color: #f59e0b;
+}
+
+.evacuation-route-item.emergency {
+    border-left-color: #ef4444;
+}
+
+.route-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.route-type {
+    background: rgba(255, 107, 53, 0.2);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.route-distance {
+    color: #94A3B8;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.route-destination {
+    color: #F8FAFC;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.route-details {
+    display: flex;
+    gap: 16px;
+    font-size: 0.8rem;
+    color: #94A3B8;
+}
+
+.route-time,
+.route-safety {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
 /* Professional Map Container */
 .map-container {
     position: relative;

@@ -337,6 +337,55 @@ def test_alert_system():
             'error': str(e)
         }), 500
 
+@app.route('/api/evacuation/routes', methods=['POST'])
+def get_evacuation_routes():
+    """Generate safe evacuation routes from fire location"""
+    try:
+        data = request.get_json()
+        fire_lat = data.get('fire_lat', 30.0)
+        fire_lng = data.get('fire_lng', 79.0)
+        risk_radius = data.get('risk_radius', 5)  # km
+        
+        # Import evacuation system
+        from evacuation_routes import evacuation_system
+        
+        routes = evacuation_system.generate_evacuation_routes(
+            fire_lat, fire_lng, risk_radius
+        )
+        
+        return jsonify({
+            'success': True,
+            'fire_location': [fire_lat, fire_lng],
+            'evacuation_routes': routes,
+            'timestamp': datetime.now().isoformat()
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/evacuation/safe-zones', methods=['GET'])
+def get_safe_zones():
+    """Get list of safe zones and shelters"""
+    try:
+        from evacuation_routes import evacuation_system
+        
+        safe_zones = evacuation_system.get_safe_zones()
+        
+        return jsonify({
+            'success': True,
+            'safe_zones': safe_zones,
+            'count': len(safe_zones)
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
 if __name__ == '__main__':
     # Start real-time predictions automatically
     real_time_predictor.start_continuous_prediction()

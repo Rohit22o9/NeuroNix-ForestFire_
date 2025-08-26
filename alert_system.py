@@ -153,6 +153,10 @@ class EarlyWarningSystem:
                 alert_type='multi'
             )
             
+            # Generate evacuation routes for high risk alerts
+            if risk_level in ['high', 'very-high']:
+                alert.evacuation_routes = self._generate_evacuation_info(region, risk_score)
+            
             # Add to active alerts
             self.active_alerts.append(alert)
             
@@ -174,9 +178,42 @@ class EarlyWarningSystem:
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
         
         if risk_level == 'very-high':
-            return f"🚨 CRITICAL FIRE ALERT 🚨\n\nRegion: {region}\nRisk Level: VERY HIGH ({risk_score:.1%})\nTime: {timestamp}\n\nIMMEDIATE ACTION REQUIRED:\n• Deploy fire crews\n• Initiate evacuation protocols\n• Contact emergency services\n\nNeuroNix Fire Intelligence"
+            message = f"🚨 CRITICAL FIRE ALERT 🚨\n\nRegion: {region}\nRisk Level: VERY HIGH ({risk_score:.1%})\nTime: {timestamp}\n\nIMMEDIATE ACTION REQUIRED:\n• Deploy fire crews\n• Initiate evacuation protocols\n• Contact emergency services\n• Follow evacuation routes to safe zones\n\nEvacuation routes have been generated and are available on the dashboard.\n\nNeuroNix Fire Intelligence"
         else:
-            return f"⚠️ HIGH FIRE RISK ALERT ⚠️\n\nRegion: {region}\nRisk Level: HIGH ({risk_score:.1%})\nTime: {timestamp}\n\nRECOMMENDED ACTIONS:\n• Increase patrol frequency\n• Prepare response teams\n• Monitor conditions closely\n\nNeuroNix Fire Intelligence"
+            message = f"⚠️ HIGH FIRE RISK ALERT ⚠️\n\nRegion: {region}\nRisk Level: HIGH ({risk_score:.1%})\nTime: {timestamp}\n\nRECOMMENDED ACTIONS:\n• Increase patrol frequency\n• Prepare response teams\n• Monitor conditions closely\n• Review evacuation plans\n\nEvacuation routes available if needed.\n\nNeuroNix Fire Intelligence"
+        
+        return message
+    
+    def _generate_evacuation_info(self, region, risk_score):
+        """Generate evacuation route information for alerts"""
+        # Region coordinates (simplified mapping)
+        region_coords = {
+            'Nainital': (29.3806, 79.4422),
+            'Almora': (29.5833, 79.6667),
+            'Dehradun': (30.3165, 78.0322),
+            'Haridwar': (29.9458, 78.1642),
+            'Rishikesh': (30.0869, 78.2676)
+        }
+        
+        coords = region_coords.get(region, (30.0, 79.0))
+        
+        try:
+            # Try to get evacuation routes from the evacuation system
+            from evacuation_routes import evacuation_system
+            routes = evacuation_system.generate_evacuation_routes(coords[0], coords[1], 5)
+            
+            return {
+                'available': True,
+                'route_count': len(routes),
+                'primary_destination': routes[0]['destination']['name'] if routes else 'Multiple safe zones',
+                'estimated_time': routes[0]['estimated_time_minutes'] if routes else 'Variable',
+                'fire_location': coords
+            }
+        except:
+            return {
+                'available': False,
+                'message': 'Evacuation routes will be generated when needed'
+            }
     
     def _get_recipients_for_region(self, region):
         """Get phone numbers of officers responsible for a region"""

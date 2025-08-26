@@ -730,6 +730,12 @@ async function startFireSimulation(latlng) {
         showToast('AI-powered simulation active', 'success');
     }
 
+    // Generate evacuation routes for this fire location
+    setTimeout(() => {
+        generateEvacuationRoutes(latlng.lat, latlng.lng, 3); // 3km risk radius
+    }, 2000);
+
+
     // Add initial burn circle
     const initialBurn = L.circle([latlng.lat, latlng.lng], {
         color: '#ff6b35',
@@ -1730,7 +1736,7 @@ function downloadReport() {
 // Open field dashboard function
 function openFieldDashboard() {
     showToast('Opening Field Officer Dashboard...', 'processing', 1500);
-    
+
     setTimeout(() => {
         window.open('/field-dashboard', '_blank');
         showToast('Field dashboard opened in new tab', 'success');
@@ -1757,3 +1763,155 @@ document.addEventListener('keydown', function(e) {
         downloadReport();
     }
 });
+
+// --- Evacuation Route Mapping Feature ---
+
+let evacuationRouteLayer = null;
+
+// Function to generate safe evacuation routes using OpenStreetMap API (Nominatim for geocoding, OSRM for routing)
+async function generateEvacuationRoutes(fireLat, fireLng, radiusKm) {
+    if (!simulationMap) {
+        console.error("Simulation map not initialized.");
+        return;
+    }
+
+    // 1. Find nearby settlements (simplified: using predefined locations for demonstration)
+    const nearbySettlements = await findNearbySettlements(fireLat, fireLng, radiusKm);
+
+    if (nearbySettlements.length === 0) {
+        console.log("No nearby settlements found for evacuation.");
+        showToast("No safe evacuation routes could be determined. No nearby settlements found.", "warning");
+        return;
+    }
+
+    // 2. Determine the safest route to the nearest suitable settlement
+    // For simplicity, we'll pick the closest settlement as the target.
+    // In a real-world scenario, you'd consider factors like road availability, terrain, etc.
+    const targetSettlement = nearbySettlements[0]; // Closest settlement
+
+    // 3. Get routing information from OSRM (Open Source Routing Machine)
+    // We'll use a public OSRM instance for demonstration.
+    // Note: Public instances may have rate limits.
+    const routingUrl = `https://router.project-osrm.org/route/v1/driving/${fireLng},${fireLat};${targetSettlement.lon},${targetSettlement.lat}?geometries=geojson`;
+
+    try {
+        const response = await fetch(routingUrl);
+        if (!response.ok) {
+            throw new Error(`OSRM routing failed with status ${response.status}`);
+        }
+        const routeData = await response.json();
+
+        if (routeData.routes && routeData.routes.length > 0) {
+            const routeGeometry = routeData.routes[0].geometry;
+
+            // 4. Display the route on the map
+            if (evacuationRouteLayer) {
+                simulationMap.removeLayer(evacuationRouteLayer);
+            }
+
+            evacuationRouteLayer = L.geoJSON({
+                type: "Feature",
+                geometry: routeGeometry,
+                properties: {
+                    name: `Safe Route to ${targetSettlement.name}`
+                }
+            }, {
+                style: {
+                    color: '#007bff', // Blue for evacuation routes
+                    weight: 5,
+                    opacity: 0.7
+                }
+            }).addTo(simulationMap);
+
+            // Add a popup to the route
+            evacuationRouteLayer.bindPopup(`
+                <b>Safe Evacuation Route</b><br>
+                To: ${targetSettlement.name}<br>
+                Distance: ${(routeData.routes[0].distance / 1000).toFixed(2)} km<br>
+                Duration: ${(routeData.routes[0].duration / 60).toFixed(1)} minutes
+            `).openPopup();
+
+            // Highlight the fire origin and target settlement
+            L.circleMarker([fireLat, fireLng], {
+                color: 'red',
+                fillColor: '#ff4444',
+                radius: 8,
+                weight: 2
+            }).addTo(simulationMap).bindPopup("Current Fire Location").openPopup();
+
+            L.circleMarker([targetSettlement.lat, targetSettlement.lng], {
+                color: 'green',
+                fillColor: '#28a745',
+                radius: 8,
+                weight: 2
+            }).addTo(simulationMap).bindPopup(`Evacuation Point: ${targetSettlement.name}`).openPopup();
+
+            // Zoom to the route
+            simulationMap.fitBounds(evacuationRouteLayer.getBounds());
+
+            showToast(`Safe evacuation route to ${targetSettlement.name} displayed.`, 'success');
+
+        } else {
+            console.log("No route found by OSRM.");
+            showToast("Could not find a routing path.", "warning");
+        }
+    } catch (error) {
+        console.error("Error fetching evacuation route:", error);
+        showToast("Failed to generate evacuation route.", "error");
+    }
+}
+
+// Function to find nearby settlements (placeholder - replace with actual geocoding/database lookup)
+async function findNearbySettlements(fireLat, fireLng, radiusKm) {
+    // In a real application, you would query a database or use a geocoding service
+    // to find settlements within a given radius.
+    // For this example, we'll use a predefined list of settlements and filter them.
+
+    const allSettlements = [
+        { name: 'Nainital', lat: 29.3806, lon: 79.4422, population: 45000 },
+        { name: 'Bhowali', lat: 29.3767, lon: 79.4160, population: 10000 },
+        { name: 'Bhimtal', lat: 29.3500, lon: 79.5500, population: 15000 },
+        { name: 'Almora', lat: 29.6500, lon: 79.6667, population: 35000 },
+        { name: 'Ranikhet', lat: 29.6400, lon: 79.4100, population: 19000 },
+        { name: 'Dehradun', lat: 30.3165, lon: 78.0322, population: 700000 },
+        { name: 'Mussoorie', lat: 30.4571, lon: 78.0654, population: 30000 },
+        { name: 'Rishikesh', lat: 30.0869, lon: 78.2676, population: 100000 },
+        { name: 'Haridwar', lat: 29.9457, lon: 78.1642, population: 220000 },
+    ];
+
+    const settlementsWithinRadius = allSettlements.filter(settlement => {
+        const distance = getDistance(fireLat, fireLng, settlement.lat, settlement.lon);
+        return distance <= radiusKm;
+    });
+
+    // Sort by distance (closest first)
+    settlementsWithinRadius.sort((a, b) => {
+        const distA = getDistance(fireLat, fireLng, a.lat, a.lon);
+        const distB = getDistance(fireLat, fireLng, b.lat, b.lon);
+        return distA - distB;
+    });
+
+    // Prioritize settlements based on population (optional, for better evacuation planning)
+    // For now, just return the closest ones.
+
+    return settlementsWithinRadius;
+}
+
+// Helper function to calculate distance between two lat/lng points (Haversine formula)
+function getDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Radius of the Earth in kilometers
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c; // Distance in km
+    return distance;
+}
+
+// Helper function to convert degrees to radians
+function deg2rad(deg) {
+    return deg * (Math.PI / 180);
+}
