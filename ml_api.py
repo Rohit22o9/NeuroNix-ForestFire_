@@ -1,4 +1,3 @@
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import json
@@ -19,17 +18,25 @@ except ImportError:
     ALERT_SYSTEM_AVAILABLE = False
     print("Alert system not available")
 
+# Import resource optimization system
+try:
+    from resource_optimizer import get_resource_recommendations, resource_optimizer
+    RESOURCE_OPTIMIZER_AVAILABLE = True
+except ImportError:
+    RESOURCE_OPTIMIZER_AVAILABLE = False
+    print("Resource optimizer not available")
+
 # Global variables for real-time data simulation
 current_predictions = {}
 simulation_cache = {}
 
 class RealTimePredictor:
     """Handles real-time predictions and updates"""
-    
+
     def __init__(self):
         self.is_running = False
         self.prediction_thread = None
-        
+
     def start_continuous_prediction(self):
         """Start continuous prediction updates"""
         if not self.is_running:
@@ -37,34 +44,34 @@ class RealTimePredictor:
             self.prediction_thread = threading.Thread(target=self._prediction_loop)
             self.prediction_thread.daemon = True
             self.prediction_thread.start()
-    
+
     def _prediction_loop(self):
         """Main prediction loop running in background"""
         regions = ['Nainital', 'Almora', 'Dehradun', 'Haridwar', 'Rishikesh']
-        
+
         while self.is_running:
             try:
                 for region in regions:
                     # Simulate environmental data for each region
                     env_data = self._generate_regional_data(region)
-                    
+
                     # Get ML predictions
                     predictions = get_model_predictions(env_data)
-                    
+
                     # Store predictions
                     current_predictions[region] = {
                         'prediction': predictions,
                         'timestamp': datetime.now().isoformat(),
                         'environmental_data': env_data
                     }
-                
+
                 # Update every 30 seconds
                 time.sleep(30)
-                
+
             except Exception as e:
                 print(f"Error in prediction loop: {e}")
                 time.sleep(10)
-    
+
     def _generate_regional_data(self, region: str) -> dict:
         """Generate realistic environmental data for a region"""
         base_conditions = {
@@ -74,9 +81,9 @@ class RealTimePredictor:
             'Haridwar': {'temp_base': 32, 'humidity_base': 60, 'wind_base': 10},
             'Rishikesh': {'temp_base': 29, 'humidity_base': 52, 'wind_base': 14}
         }
-        
+
         base = base_conditions.get(region, {'temp_base': 28, 'humidity_base': 50, 'wind_base': 15})
-        
+
         # Add realistic variations
         return {
             'temperature': max(15, base['temp_base'] + np.random.normal(0, 3)),
@@ -97,7 +104,7 @@ def predict_fire_risk():
     """API endpoint for fire risk prediction"""
     try:
         data = request.get_json()
-        
+
         # Extract environmental parameters
         env_data = {
             'temperature': data.get('temperature', 30),
@@ -109,22 +116,22 @@ def predict_fire_risk():
             'slope': data.get('slope', 15),
             'vegetation_density': data.get('vegetation_density', 'moderate')
         }
-        
+
         # Get ML predictions
         predictions = get_model_predictions(env_data)
-        
+
         # Check if alert should be triggered
         if ALERT_SYSTEM_AVAILABLE and predictions.get('ensemble_risk_score', 0) > 0.7:
             region = data.get('region', 'Unknown Region')
             risk_score = predictions['ensemble_risk_score']
             risk_level = 'very-high' if risk_score > 0.85 else 'high'
-            
+
             # Trigger alert through alert system
             try:
                 alert_system._trigger_alert(region, risk_level, risk_score)
             except Exception as e:
                 print(f"Failed to trigger alert: {e}")
-        
+
         return jsonify({
             'success': True,
             'predictions': predictions,
@@ -132,7 +139,7 @@ def predict_fire_risk():
             'timestamp': datetime.now().isoformat(),
             'alert_triggered': ALERT_SYSTEM_AVAILABLE and predictions.get('ensemble_risk_score', 0) > 0.7
         })
-        
+
     except Exception as e:
         return jsonify({
             'success': False,
@@ -144,22 +151,22 @@ def simulate_fire():
     """API endpoint for fire spread simulation"""
     try:
         data = request.get_json()
-        
+
         # Extract coordinates and environmental data
         lat = data.get('lat', 30.0)
         lng = data.get('lng', 79.0)
         duration = data.get('duration', 6)
-        
+
         env_data = {
             'temperature': data.get('temperature', 30),
             'humidity': data.get('humidity', 50),
             'wind_speed': data.get('wind_speed', 15),
             'wind_direction': data.get('wind_direction', 'NE')
         }
-        
+
         # Run simulation
         simulation_results = simulate_fire_scenario(lat, lng, env_data)
-        
+
         return jsonify({
             'success': True,
             'simulation': simulation_results,
@@ -170,7 +177,7 @@ def simulate_fire():
             },
             'timestamp': datetime.now().isoformat()
         })
-        
+
     except Exception as e:
         return jsonify({
             'success': False,
@@ -182,7 +189,7 @@ def get_realtime_predictions():
     """Get real-time predictions for all regions"""
     try:
         region = request.args.get('region', 'all')
-        
+
         if region == 'all':
             return jsonify({
                 'success': True,
@@ -197,7 +204,7 @@ def get_realtime_predictions():
                 'region': region,
                 'timestamp': datetime.now().isoformat()
             })
-            
+
     except Exception as e:
         return jsonify({
             'success': False,
@@ -209,16 +216,16 @@ def analyze_ndvi():
     """Analyze NDVI data and detect burned areas"""
     try:
         data = request.get_json()
-        
+
         # Simulate NDVI data (in production, this would come from satellite imagery)
         before_shape = data.get('shape', [64, 64])
         ndvi_before = np.random.beta(3, 2, before_shape)  # Healthy vegetation
         ndvi_after = ndvi_before - np.random.exponential(0.1, before_shape)  # After potential fire
         ndvi_after = np.clip(ndvi_after, 0, 1)
-        
+
         # Analyze NDVI delta
         analysis = NDVIAnalyzer.calculate_ndvi_delta(ndvi_before, ndvi_after)
-        
+
         return jsonify({
             'success': True,
             'ndvi_analysis': analysis,
@@ -229,7 +236,7 @@ def analyze_ndvi():
             },
             'timestamp': datetime.now().isoformat()
         })
-        
+
     except Exception as e:
         return jsonify({
             'success': False,
@@ -301,6 +308,43 @@ def start_realtime():
             'error': str(e)
         }), 500
 
+# Resource Optimization API endpoints
+@app.route('/api/resources/optimize', methods=['POST'])
+def optimize_resources():
+    """API endpoint to get resource optimization recommendations"""
+    if not RESOURCE_OPTIMIZER_AVAILABLE:
+        return jsonify({
+            'success': False,
+            'error': 'Resource optimizer not available'
+        }), 503
+
+    try:
+        data = request.get_json()
+
+        # Extract prediction data and resource needs
+        fire_prediction_data = data.get('fire_prediction_data', {})
+        fire_location = data.get('location', {'lat': 30.0, 'lng': 79.0})
+        affected_area_sq_km = data.get('affected_area_sq_km', 10.0)
+
+        # Get resource recommendations from the optimizer
+        recommendations = get_resource_recommendations(
+            fire_prediction_data,
+            fire_location,
+            affected_area_sq_km
+        )
+
+        return jsonify({
+            'success': True,
+            'recommendations': recommendations,
+            'timestamp': datetime.now().isoformat()
+        })
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
 # Alert system integration endpoints
 @app.route('/api/alerts/dashboard')
 def redirect_to_dashboard():
@@ -319,14 +363,14 @@ def test_alert_system():
             'success': False,
             'error': 'Alert system not available'
         }), 503
-    
+
     try:
         data = request.get_json()
         region = data.get('region', 'Test Region')
         risk_score = data.get('risk_score', 0.8)
-        
+
         alert_system._trigger_alert(region, 'high', risk_score)
-        
+
         return jsonify({
             'success': True,
             'message': f'Test alert sent for {region}'
@@ -345,21 +389,21 @@ def get_evacuation_routes():
         fire_lat = data.get('fire_lat', 30.0)
         fire_lng = data.get('fire_lng', 79.0)
         risk_radius = data.get('risk_radius', 5)  # km
-        
+
         # Import evacuation system
         from evacuation_routes import evacuation_system
-        
+
         routes = evacuation_system.generate_evacuation_routes(
             fire_lat, fire_lng, risk_radius
         )
-        
+
         return jsonify({
             'success': True,
             'fire_location': [fire_lat, fire_lng],
             'evacuation_routes': routes,
             'timestamp': datetime.now().isoformat()
         })
-        
+
     except Exception as e:
         return jsonify({
             'success': False,
@@ -371,15 +415,15 @@ def get_safe_zones():
     """Get list of safe zones and shelters"""
     try:
         from evacuation_routes import evacuation_system
-        
+
         safe_zones = evacuation_system.get_safe_zones()
-        
+
         return jsonify({
             'success': True,
             'safe_zones': safe_zones,
             'count': len(safe_zones)
         })
-        
+
     except Exception as e:
         return jsonify({
             'success': False,
@@ -389,5 +433,5 @@ def get_safe_zones():
 if __name__ == '__main__':
     # Start real-time predictions automatically
     real_time_predictor.start_continuous_prediction()
-    
+
     app.run(host='0.0.0.0', port=5001, debug=True)

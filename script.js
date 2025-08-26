@@ -2,6 +2,8 @@
 let riskMap;
 let simulationMap;
 let evacuationMap;
+let resourceRecommendations = [];
+let resourceStatus = {};
 let isSimulationRunning = false;
 let simulationTime = 0;
 let simulationInterval;
@@ -1178,6 +1180,7 @@ function startDataUpdates() {
     setInterval(updateFireSpreadChart, 10000);
     setInterval(updateActivityFeed, 45000);
     setInterval(updateEnvironmentalConditions, 35000);
+    setInterval(updateResourceOptimizationData, 120000); // Update every 2 minutes
 }
 
 function updateEnvironmentalData() {
@@ -1351,6 +1354,34 @@ function updateEnvironmentalConditions() {
 
     if (Math.random() < 0.3) {
         updateMLPredictions();
+    }
+}
+
+function updateResourceOptimizationData() {
+    // Simulate resource status changes
+    const resources = ['availableResources', 'deployedResources', 'maintenanceResources'];
+    
+    resources.forEach(resourceId => {
+        const element = document.getElementById(resourceId);
+        if (element) {
+            const currentValue = parseInt(element.textContent) || 0;
+            const variation = Math.floor(Math.random() * 3) - 1; // -1, 0, or 1
+            const newValue = Math.max(0, currentValue + variation);
+            element.textContent = newValue;
+        }
+    });
+    
+    // Update efficiency scores occasionally
+    if (Math.random() < 0.4) {
+        const efficiencyScores = ['responseTimeScore', 'resourceCoverage', 'riskMitigation'];
+        efficiencyScores.forEach(scoreId => {
+            const element = document.getElementById(scoreId);
+            if (element) {
+                const baseScore = parseInt(element.textContent) || 85;
+                const newScore = Math.max(70, Math.min(98, baseScore + (Math.random() * 6 - 3)));
+                element.textContent = Math.round(newScore) + '%';
+            }
+        });
     }
 }
 
@@ -2075,6 +2106,403 @@ function openFieldDashboard() {
         showToast('Field dashboard opened in new tab', 'success');
     }, 1500);
 }
+
+// Resource Optimization Functions
+async function optimizeResources() {
+    showToast('Optimizing resource deployment...', 'processing', 2000);
+    
+    try {
+        const response = await fetch(`${ML_API_BASE}/api/resources/recommendations`);
+        const data = await response.json();
+        
+        if (data.success) {
+            resourceRecommendations = data.resource_optimization.recommendations;
+            resourceStatus = data.resource_optimization.resource_status;
+            
+            updateResourceRecommendationsTable();
+            updateResourceStatusSummary();
+            updateResourceAnalytics(data.resource_optimization);
+            
+            showToast('Resource optimization completed successfully!', 'success');
+        } else {
+            showToast('Failed to optimize resources', 'error');
+        }
+    } catch (error) {
+        console.error('Error optimizing resources:', error);
+        showToast('Resource optimization service unavailable', 'warning');
+        
+        // Use fallback data for demo
+        generateFallbackResourceRecommendations();
+    }
+}
+
+function generateFallbackResourceRecommendations() {
+    // Generate demo resource recommendations
+    const regions = ['Nainital', 'Almora', 'Dehradun', 'Haridwar'];
+    const resourceTypes = [
+        { type: 'firefighter_crew', icon: 'fas fa-users', name: 'Firefighter Crew' },
+        { type: 'water_tank', icon: 'fas fa-truck', name: 'Water Tanker' },
+        { type: 'drone', icon: 'fas fa-drone', name: 'Surveillance Drone' },
+        { type: 'helicopter', icon: 'fas fa-helicopter', name: 'Fire Helicopter' }
+    ];
+    
+    resourceRecommendations = [];
+    
+    for (let i = 0; i < 12; i++) {
+        const region = regions[Math.floor(Math.random() * regions.length)];
+        const resourceType = resourceTypes[Math.floor(Math.random() * resourceTypes.length)];
+        const priority = ['critical', 'high', 'medium', 'low'][Math.floor(Math.random() * 4)];
+        
+        resourceRecommendations.push({
+            resource_id: `${resourceType.type}_${i + 1}`,
+            resource_type: resourceType.type,
+            resource_name: resourceType.name,
+            resource_icon: resourceType.icon,
+            priority: priority,
+            region: region,
+            arrival_time_minutes: 15 + Math.floor(Math.random() * 45),
+            duration_hours: 4 + Math.floor(Math.random() * 6),
+            cost_estimate: 2000 + Math.floor(Math.random() * 8000),
+            effectiveness_score: 0.6 + Math.random() * 0.4,
+            justification: `${priority.charAt(0).toUpperCase() + priority.slice(1)} priority deployment needed for ${region} region.`
+        });
+    }
+    
+    // Sort by priority
+    const priorityOrder = { 'critical': 0, 'high': 1, 'medium': 2, 'low': 3 };
+    resourceRecommendations.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+    
+    updateResourceRecommendationsTable();
+    updateResourceStatusSummary();
+    updateResourceAnalyticsFallback();
+}
+
+function updateResourceRecommendationsTable() {
+    const tbody = document.getElementById('recommendationsTableBody');
+    if (!tbody) return;
+    
+    if (resourceRecommendations.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="8" class="loading-cell">
+                    <i class="fas fa-info-circle"></i>
+                    No resource recommendations available. Click "Optimize" to generate recommendations.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    tbody.innerHTML = resourceRecommendations.map(rec => `
+        <tr>
+            <td>
+                <span class="priority-badge ${rec.priority}">${rec.priority}</span>
+            </td>
+            <td>
+                <div class="resource-type-badge">
+                    <i class="${rec.resource_icon || 'fas fa-cog'}"></i>
+                    ${rec.resource_name || rec.resource_type.replace('_', ' ').toUpperCase()}
+                </div>
+            </td>
+            <td><strong>${rec.region}</strong></td>
+            <td>${rec.arrival_time_minutes} min</td>
+            <td>${rec.duration_hours} hrs</td>
+            <td>₹${rec.cost_estimate.toLocaleString()}</td>
+            <td>
+                <div class="effectiveness-bar">
+                    <div class="effectiveness-fill" style="width: ${(rec.effectiveness_score * 100)}%"></div>
+                </div>
+                <small>${(rec.effectiveness_score * 100).toFixed(0)}%</small>
+            </td>
+            <td>
+                <button class="deploy-btn" onclick="deployResource('${rec.resource_id}', '${rec.region}')" 
+                        title="${rec.justification}">
+                    <i class="fas fa-play"></i> Deploy
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function updateResourceStatusSummary() {
+    // Update resource status numbers
+    const updates = {
+        'totalFirefighters': resourceStatus.by_type?.firefighter_crew?.total || 5,
+        'totalTankers': resourceStatus.by_type?.water_tank?.total || 3,
+        'totalDrones': resourceStatus.by_type?.drone?.total || 2,
+        'totalHelicopters': resourceStatus.by_type?.helicopter?.total || 2
+    };
+    
+    Object.entries(updates).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = value;
+        }
+    });
+    
+    // Update availability summary
+    if (resourceStatus.total_resources) {
+        updateElementText('availableResources', resourceStatus.available || 8);
+        updateElementText('deployedResources', resourceStatus.deployed || 3);
+        updateElementText('maintenanceResources', resourceStatus.maintenance || 1);
+    }
+}
+
+function updateResourceAnalytics(optimizationData) {
+    // Update cost analysis
+    const totalCost = optimizationData.total_cost_estimate || 0;
+    updateElementText('totalDeploymentCost', `₹${totalCost.toLocaleString()}`);
+    
+    const avgDuration = resourceRecommendations.reduce((sum, rec) => sum + rec.duration_hours, 0) / resourceRecommendations.length;
+    updateElementText('costPerHour', `₹${Math.round(totalCost / (avgDuration || 1)).toLocaleString()}`);
+    
+    // Update efficiency metrics
+    const avgEffectiveness = resourceRecommendations.reduce((sum, rec) => sum + rec.effectiveness_score, 0) / resourceRecommendations.length;
+    updateElementText('overallEfficiencyValue', `${Math.round(avgEffectiveness * 100)}%`);
+    
+    // Update response time score (based on average arrival time)
+    const avgResponseTime = resourceRecommendations.reduce((sum, rec) => sum + rec.arrival_time_minutes, 0) / resourceRecommendations.length;
+    const responseScore = Math.max(60, 100 - avgResponseTime);
+    updateElementText('responseTimeScore', `${Math.round(responseScore)}%`);
+    
+    // Update charts
+    updateResourceCharts(optimizationData);
+}
+
+function updateResourceAnalyticsFallback() {
+    // Fallback analytics update with demo data
+    const totalCost = resourceRecommendations.reduce((sum, rec) => sum + rec.cost_estimate, 0);
+    updateElementText('totalDeploymentCost', `₹${totalCost.toLocaleString()}`);
+    
+    const avgDuration = resourceRecommendations.reduce((sum, rec) => sum + rec.duration_hours, 0) / resourceRecommendations.length;
+    updateElementText('costPerHour', `₹${Math.round(totalCost / avgDuration).toLocaleString()}`);
+    
+    const avgEffectiveness = resourceRecommendations.reduce((sum, rec) => sum + rec.effectiveness_score, 0) / resourceRecommendations.length;
+    updateElementText('overallEfficiencyValue', `${Math.round(avgEffectiveness * 100)}%`);
+    
+    updateElementText('costEfficiencyScore', 'A-');
+    updateElementText('resourceCoverage', '88%');
+    updateElementText('riskMitigation', '94%');
+    
+    // Initialize demo charts
+    initializeResourceCharts();
+}
+
+function updateResourceCharts(optimizationData) {
+    initializeCostBreakdownChart();
+    initializeDeploymentEfficiencyGauge();
+    initializeResourceAvailabilityChart();
+}
+
+function initializeResourceCharts() {
+    initializeCostBreakdownChart();
+    initializeDeploymentEfficiencyGauge();
+    initializeResourceAvailabilityChart();
+}
+
+function initializeCostBreakdownChart() {
+    const ctx = document.getElementById('costBreakdownChart');
+    if (!ctx) return;
+    
+    // Calculate cost breakdown by resource type
+    const costByType = {};
+    resourceRecommendations.forEach(rec => {
+        const type = rec.resource_name || rec.resource_type;
+        costByType[type] = (costByType[type] || 0) + rec.cost_estimate;
+    });
+    
+    new Chart(ctx.getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(costByType),
+            datasets: [{
+                data: Object.values(costByType),
+                backgroundColor: ['#ff6b35', '#ffa726', '#66bb6a', '#42a5f5', '#ab47bc'],
+                borderWidth: 2,
+                borderColor: '#1a1a2e'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#ffffff',
+                        padding: 10,
+                        font: { size: 10 }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: '#ffffff',
+                    bodyColor: '#ffffff',
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ₹' + context.parsed.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function initializeDeploymentEfficiencyGauge() {
+    const ctx = document.getElementById('deploymentEfficiencyGauge');
+    if (!ctx) return;
+    
+    const avgEffectiveness = resourceRecommendations.length > 0 
+        ? resourceRecommendations.reduce((sum, rec) => sum + rec.effectiveness_score, 0) / resourceRecommendations.length
+        : 0.85;
+    
+    new Chart(ctx.getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [avgEffectiveness * 100, (1 - avgEffectiveness) * 100],
+                backgroundColor: ['#10b981', 'rgba(255, 255, 255, 0.1)'],
+                borderWidth: 0,
+                cutout: '75%'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false }
+            }
+        }
+    });
+}
+
+function initializeResourceAvailabilityChart() {
+    const ctx = document.getElementById('resourceAvailabilityChart');
+    if (!ctx) return;
+    
+    new Chart(ctx.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: ['Firefighters', 'Tankers', 'Drones', 'Helicopters'],
+            datasets: [
+                {
+                    label: 'Available',
+                    data: [4, 2, 2, 1],
+                    backgroundColor: '#10b981'
+                },
+                {
+                    label: 'Deployed',
+                    data: [1, 1, 0, 1],
+                    backgroundColor: '#f59e0b'
+                },
+                {
+                    label: 'Maintenance',
+                    data: [0, 0, 0, 0],
+                    backgroundColor: '#ef4444'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: { color: '#ffffff', font: { size: 10 } }
+                }
+            },
+            scales: {
+                x: {
+                    stacked: true,
+                    ticks: { color: '#ffffff', font: { size: 10 } },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                },
+                y: {
+                    stacked: true,
+                    ticks: { color: '#ffffff', font: { size: 10 } },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                }
+            }
+        }
+    });
+}
+
+async function deployResource(resourceId, region) {
+    showToast(`Deploying ${resourceId} to ${region}...`, 'processing', 2000);
+    
+    try {
+        // Get region coordinates
+        const regionCoords = {
+            'Nainital': [29.3806, 79.4422],
+            'Almora': [29.5833, 79.6667],
+            'Dehradun': [30.3165, 78.0322],
+            'Haridwar': [29.9458, 78.1642],
+            'Rishikesh': [30.0869, 78.2676]
+        };
+        
+        const location = regionCoords[region] || [30.0, 79.0];
+        
+        const response = await fetch(`${ML_API_BASE}/api/resources/deploy`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                resource_id: resourceId,
+                location: location
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showToast(`${resourceId} successfully deployed to ${region}!`, 'success');
+            
+            // Remove from recommendations table
+            resourceRecommendations = resourceRecommendations.filter(rec => rec.resource_id !== resourceId);
+            updateResourceRecommendationsTable();
+            
+            // Update status counts
+            const deployedElement = document.getElementById('deployedResources');
+            const availableElement = document.getElementById('availableResources');
+            if (deployedElement && availableElement) {
+                const deployed = parseInt(deployedElement.textContent) + 1;
+                const available = parseInt(availableElement.textContent) - 1;
+                deployedElement.textContent = deployed;
+                availableElement.textContent = Math.max(0, available);
+            }
+        } else {
+            showToast('Failed to deploy resource', 'error');
+        }
+    } catch (error) {
+        console.error('Error deploying resource:', error);
+        showToast('Deployment service unavailable - simulating deployment', 'warning');
+        
+        // Simulate successful deployment
+        setTimeout(() => {
+            showToast(`${resourceId} deployed to ${region} (simulated)`, 'success');
+            resourceRecommendations = resourceRecommendations.filter(rec => rec.resource_id !== resourceId);
+            updateResourceRecommendationsTable();
+        }, 1000);
+    }
+}
+
+async function refreshResourceRecommendations() {
+    showToast('Refreshing recommendations...', 'processing', 1500);
+    
+    setTimeout(() => {
+        optimizeResources();
+    }, 1500);
+}
+
+// Initialize resource optimization when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Add existing initialization code here
+    
+    // Initialize resource optimization after a delay
+    setTimeout(() => {
+        generateFallbackResourceRecommendations();
+    }, 2000);
+});
 
 // Enhanced keyboard shortcuts
 document.addEventListener('keydown', function(e) {

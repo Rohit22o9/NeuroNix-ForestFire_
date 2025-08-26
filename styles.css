@@ -962,6 +962,364 @@ body::after {
     font-size: 0.875rem;
 }
 
+/* Resource Optimization Styles */
+.resource-overview {
+    display: grid;
+    gap: 2rem;
+}
+
+.resource-status-card {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.resource-status-card h3 {
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.resource-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.resource-stat {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border-left: 4px solid #ff6b35;
+}
+
+.resource-stat .stat-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 107, 53, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff6b35;
+    font-size: 1.2rem;
+}
+
+.resource-stat .stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.resource-stat .stat-number {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #ffffff;
+    line-height: 1;
+}
+
+.resource-stat .stat-label {
+    font-size: 0.9rem;
+    color: #94A3B8;
+    margin-top: 0.25rem;
+}
+
+.resource-recommendations-card {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-header h3 {
+    color: #ffffff;
+    margin: 0;
+    font-size: 1.4rem;
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.recommendations-table-container {
+    overflow-x: auto;
+    max-height: 500px;
+}
+
+.recommendations-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.recommendations-table th {
+    background: rgba(255, 107, 53, 0.1);
+    color: #ff6b35;
+    font-weight: 600;
+    text-align: left;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.recommendations-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: #F8FAFC;
+    vertical-align: middle;
+}
+
+.recommendations-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.priority-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.priority-badge.critical {
+    background: #ef4444;
+    color: white;
+}
+
+.priority-badge.high {
+    background: #f59e0b;
+    color: white;
+}
+
+.priority-badge.medium {
+    background: #10b981;
+    color: white;
+}
+
+.priority-badge.low {
+    background: #6b7280;
+    color: white;
+}
+
+.resource-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #F8FAFC;
+}
+
+.effectiveness-bar {
+    width: 60px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.effectiveness-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, #10b981 100%);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.deploy-btn {
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.deploy-btn:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+.deploy-btn:disabled {
+    background: #6b7280;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.loading-cell {
+    text-align: center;
+    color: #94A3B8;
+    padding: 2rem;
+}
+
+.resource-analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.cost-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.cost-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+}
+
+.cost-label {
+    color: #94A3B8;
+    font-size: 0.9rem;
+}
+
+.cost-value {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.efficiency-metrics {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.efficiency-gauge {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.efficiency-breakdown {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.efficiency-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+}
+
+.efficiency-label {
+    color: #94A3B8;
+    font-size: 0.85rem;
+}
+
+.efficiency-value {
+    color: #10b981;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.availability-summary {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.availability-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #F8FAFC;
+}
+
+.availability-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.availability-item.available .availability-dot {
+    background: #10b981;
+}
+
+.availability-item.deployed .availability-dot {
+    background: #f59e0b;
+}
+
+.availability-item.maintenance .availability-dot {
+    background: #ef4444;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .resource-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .resource-analytics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .efficiency-metrics {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .resource-stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .card-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .card-actions {
+        justify-content: center;
+    }
+    
+    .recommendations-table {
+        font-size: 0.8rem;
+    }
+    
+    .recommendations-table th,
+    .recommendations-table td {
+        padding: 0.5rem;
+    }
+}
+
 /* Search highlight for region cards */
 .region-card.search-highlighted {
     transform: translateY(-4px) scale(1.02);

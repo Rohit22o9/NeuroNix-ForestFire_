@@ -25,6 +25,7 @@
                 <a href="#fire-risk" class="nav-link">Risk Analysis</a>
                 <a href="#fire-simulation" class="nav-link">Simulation</a>
                 <a href="#alerts" class="nav-link">Alerts & Evacuation</a>
+                <a href="#resource-optimization" class="nav-link">Resource Optimization</a>
                 <a href="#data-sources" class="nav-link">Data Sources</a>
                 <a href="#analytics" class="nav-link">Analytics</a>
             </nav>
@@ -861,6 +862,174 @@
                         <div class="source-status active">
                             <span class="status-dot"></span>
                             12 Active
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resource Optimization Section -->
+    <section id="resource-optimization" class="section">
+        <div class="section-header">
+            <h2>Resource Optimization Engine</h2>
+            <p>AI-Powered Optimal Deployment of Firefighting Resources</p>
+        </div>
+        <div class="section-content">
+            <div class="resource-overview">
+                <!-- Resource Status Summary -->
+                <div class="resource-status-card">
+                    <h3>Resource Status Overview</h3>
+                    <div class="resource-stats-grid">
+                        <div class="resource-stat">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-number" id="totalFirefighters">15</span>
+                                <span class="stat-label">Firefighter Crews</span>
+                            </div>
+                        </div>
+                        <div class="resource-stat">
+                            <div class="stat-icon">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-number" id="totalTankers">8</span>
+                                <span class="stat-label">Water Tankers</span>
+                            </div>
+                        </div>
+                        <div class="resource-stat">
+                            <div class="stat-icon">
+                                <i class="fas fa-drone"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-number" id="totalDrones">6</span>
+                                <span class="stat-label">Surveillance Drones</span>
+                            </div>
+                        </div>
+                        <div class="resource-stat">
+                            <div class="stat-icon">
+                                <i class="fas fa-helicopter"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-number" id="totalHelicopters">4</span>
+                                <span class="stat-label">Fire Helicopters</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resource Allocation Recommendations Table -->
+                <div class="resource-recommendations-card">
+                    <div class="card-header">
+                        <h3>Deployment Recommendations</h3>
+                        <div class="card-actions">
+                            <button class="action-btn" onclick="refreshResourceRecommendations()">
+                                <i class="fas fa-sync-alt"></i>
+                                Refresh
+                            </button>
+                            <button class="action-btn primary" onclick="optimizeResources()">
+                                <i class="fas fa-brain"></i>
+                                Optimize
+                            </button>
+                        </div>
+                    </div>
+                    <div class="recommendations-table-container">
+                        <table class="recommendations-table" id="resourceRecommendationsTable">
+                            <thead>
+                                <tr>
+                                    <th>Priority</th>
+                                    <th>Resource Type</th>
+                                    <th>Region</th>
+                                    <th>ETA</th>
+                                    <th>Duration</th>
+                                    <th>Cost (₹)</th>
+                                    <th>Effectiveness</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recommendationsTableBody">
+                                <!-- Dynamic content will be loaded here -->
+                                <tr class="loading-row">
+                                    <td colspan="8" class="loading-cell">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        Loading resource recommendations...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Cost and Efficiency Analysis -->
+                <div class="resource-analytics-grid">
+                    <div class="analytics-card">
+                        <h3>Cost Analysis</h3>
+                        <div class="cost-summary">
+                            <div class="cost-item">
+                                <span class="cost-label">Estimated Total Cost</span>
+                                <span class="cost-value" id="totalDeploymentCost">₹0</span>
+                            </div>
+                            <div class="cost-item">
+                                <span class="cost-label">Cost per Hour</span>
+                                <span class="cost-value" id="costPerHour">₹0</span>
+                            </div>
+                            <div class="cost-item">
+                                <span class="cost-label">Cost Efficiency Score</span>
+                                <span class="cost-value" id="costEfficiencyScore">-</span>
+                            </div>
+                        </div>
+                        <div class="cost-breakdown">
+                            <canvas id="costBreakdownChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <h3>Deployment Efficiency</h3>
+                        <div class="efficiency-metrics">
+                            <div class="efficiency-gauge">
+                                <canvas id="deploymentEfficiencyGauge"></canvas>
+                                <div class="gauge-info">
+                                    <div class="gauge-label">Overall Efficiency</div>
+                                    <div class="gauge-value" id="overallEfficiencyValue">85%</div>
+                                </div>
+                            </div>
+                            <div class="efficiency-breakdown">
+                                <div class="efficiency-item">
+                                    <span class="efficiency-label">Response Time Score</span>
+                                    <span class="efficiency-value" id="responseTimeScore">92%</span>
+                                </div>
+                                <div class="efficiency-item">
+                                    <span class="efficiency-label">Resource Coverage</span>
+                                    <span class="efficiency-value" id="resourceCoverage">88%</span>
+                                </div>
+                                <div class="efficiency-item">
+                                    <span class="efficiency-label">Risk Mitigation</span>
+                                    <span class="efficiency-value" id="riskMitigation">94%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <h3>Resource Availability</h3>
+                        <div class="availability-chart-container">
+                            <canvas id="resourceAvailabilityChart"></canvas>
+                        </div>
+                        <div class="availability-summary">
+                            <div class="availability-item available">
+                                <span class="availability-dot"></span>
+                                <span>Available: <strong id="availableResources">23</strong></span>
+                            </div>
+                            <div class="availability-item deployed">
+                                <span class="availability-dot"></span>
+                                <span>Deployed: <strong id="deployedResources">8</strong></span>
+                            </div>
+                            <div class="availability-item maintenance">
+                                <span class="availability-dot"></span>
+                                <span>Maintenance: <strong id="maintenanceResources">2</strong></span>
+                            </div>
                         </div>
                     </div>
                 </div>
