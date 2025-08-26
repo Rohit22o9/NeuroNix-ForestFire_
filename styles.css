@@ -2609,8 +2609,8 @@ body::after {
 
 .evacuation-content {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 1rem;
     align-items: start;
 }
 
@@ -2623,7 +2623,8 @@ body::after {
 }
 
 .evacuation-map {
-    height: 350px;
+    height: 280px;
+    width: 100%;
     border-radius: 12px;
 }
 

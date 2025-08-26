@@ -244,6 +244,11 @@ function initializeMaps() {
                 attribution: '© OpenStreetMap contributors'
             }).addTo(evacuationMap);
 
+            // Force map to resize properly
+            setTimeout(() => {
+                evacuationMap.invalidateSize();
+            }, 100);
+
             // Add safe zones and evacuation routes
             initializeEvacuationMap();
         }
@@ -1848,6 +1853,9 @@ function initializeEvacuationMap() {
 function showSampleEvacuationRoutes() {
     if (!evacuationMap) return;
     
+    // Clear existing routes first
+    clearEvacuationRoutes();
+    
     // Sample evacuation routes
     const sampleRoutes = [
         {
@@ -1889,16 +1897,29 @@ function showSampleEvacuationRoutes() {
         
         evacuationRouteLayers.push(routeLine);
     });
+    
+    // Fit map to show all routes
+    if (evacuationRouteLayers.length > 0) {
+        const group = new L.featureGroup(evacuationRouteLayers);
+        evacuationMap.fitBounds(group.getBounds().pad(0.1));
+    }
+    
+    showToast('Sample evacuation routes displayed on map', 'success');
 }
 
 function showAllEvacuationRoutesOnMap() {
-    showToast('Displaying all active evacuation routes on dedicated map...', 'processing', 1500);
+    if (!evacuationMap) {
+        showToast('Evacuation map not available', 'error');
+        return;
+    }
+    
+    showToast('Loading evacuation routes...', 'processing', 1500);
     
     setTimeout(() => {
         // Clear existing routes
         clearEvacuationRoutes();
         
-        // Add more comprehensive evacuation routes
+        // Add comprehensive evacuation routes
         const allRoutes = [
             {
                 name: 'Nainital Emergency Evacuation',
@@ -1932,6 +1953,8 @@ function showAllEvacuationRoutesOnMap() {
             }
         ];
         
+        const routeGroup = [];
+        
         allRoutes.forEach(route => {
             const routeLine = L.polyline(route.coordinates, {
                 color: route.color,
@@ -1945,17 +1968,24 @@ function showAllEvacuationRoutesOnMap() {
                     <h4><i class="fas fa-route"></i> ${route.name}</h4>
                     <p><strong>Route Type:</strong> ${route.type.charAt(0).toUpperCase() + route.type.slice(1)}</p>
                     <p><strong>Status:</strong> Active & Clear</p>
-                    <p><strong>Estimated Distance:</strong> ${(Math.random() * 4 + 2).toFixed(1)} km</p>
-                    <p><strong>Travel Time:</strong> ${Math.floor(Math.random() * 20 + 10)} minutes</p>
+                    <p><strong>Distance:</strong> ${(Math.random() * 4 + 2).toFixed(1)} km</p>
+                    <p><strong>Travel Time:</strong> ${Math.floor(Math.random() * 20 + 10)} min</p>
                 </div>
             `);
             
             evacuationRouteLayers.push(routeLine);
+            routeGroup.push(routeLine);
         });
+        
+        // Fit map to show all routes
+        if (routeGroup.length > 0) {
+            const group = new L.featureGroup(routeGroup);
+            evacuationMap.fitBounds(group.getBounds().pad(0.1));
+        }
         
         // Update route statistics
         updateEvacuationStats();
-        showToast('All evacuation routes displayed on evacuation map', 'success');
+        showToast('All evacuation routes displayed successfully', 'success');
     }, 1500);
 }
 
