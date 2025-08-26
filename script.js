@@ -1733,6 +1733,100 @@ function downloadReport() {
     }, 2000);
 }
 
+// Alert System Functions
+function sendTestAlert() {
+    showToast('Sending test alert to all field officers...', 'processing', 2000);
+    
+    setTimeout(() => {
+        showToast('Test alert sent successfully to 23 field officers!', 'success');
+        
+        // Update alert count
+        const smsCount = document.querySelector('.status-item:nth-child(2) .status-value');
+        if (smsCount) {
+            const currentCount = parseInt(smsCount.textContent) || 147;
+            smsCount.textContent = currentCount + 1;
+        }
+    }, 2000);
+}
+
+function sendEvacuationAlert(region) {
+    showToast(`Generating evacuation routes for ${region.charAt(0).toUpperCase() + region.slice(1)}...`, 'processing', 2000);
+    
+    setTimeout(() => {
+        showToast(`Evacuation alert sent! Safe routes displayed on map.`, 'success');
+        
+        // Simulate generating evacuation routes on the map
+        if (simulationMap && region === 'nainital') {
+            generateEvacuationRoutes(29.3806, 79.4422, 5); // Nainital coordinates
+        } else if (simulationMap && region === 'corbett') {
+            generateEvacuationRoutes(29.5308, 78.9514, 3); // Jim Corbett coordinates
+        } else if (simulationMap && region === 'almora') {
+            generateEvacuationRoutes(29.6500, 79.6667, 4); // Almora coordinates
+        }
+        
+        // Switch to simulation section to show the routes
+        setTimeout(() => {
+            scrollToSection('fire-simulation');
+        }, 1000);
+    }, 2000);
+}
+
+function trackEvacuation(region) {
+    showToast(`Tracking evacuation progress in ${region.charAt(0).toUpperCase() + region.slice(1)}...`, 'processing', 1500);
+    
+    setTimeout(() => {
+        showToast('Evacuation progress: 78% completed. 156 people safely evacuated.', 'success');
+    }, 1500);
+}
+
+function showAllEvacuationRoutes() {
+    showToast('Displaying all active evacuation routes...', 'processing', 1500);
+    
+    setTimeout(() => {
+        // Generate multiple evacuation routes for demonstration
+        if (simulationMap) {
+            // Clear existing routes
+            if (evacuationRouteLayer) {
+                simulationMap.removeLayer(evacuationRouteLayer);
+            }
+            
+            // Generate routes for major cities
+            generateEvacuationRoutes(29.3806, 79.4422, 5); // Nainital
+            setTimeout(() => generateEvacuationRoutes(29.6500, 79.6667, 4), 500); // Almora
+            setTimeout(() => generateEvacuationRoutes(30.3165, 78.0322, 6), 1000); // Dehradun
+        }
+        
+        scrollToSection('fire-simulation');
+        showToast('All evacuation routes displayed on simulation map', 'success');
+    }, 1500);
+}
+
+function generateNewRoutes() {
+    showToast('Updating evacuation routes with latest traffic and road conditions...', 'processing', 2500);
+    
+    setTimeout(() => {
+        // Update the route statistics
+        const routeStats = document.querySelectorAll('.evacuation-stat .evacuation-value');
+        if (routeStats.length >= 3) {
+            routeStats[0].textContent = (12 + Math.floor(Math.random() * 3)) + ' Active';
+            routeStats[1].textContent = (8 + Math.floor(Math.random() * 2)) + ' Available';
+            routeStats[2].textContent = (4.2 + (Math.random() - 0.5)).toFixed(1) + ' km';
+        }
+        
+        showToast('Evacuation routes updated successfully!', 'success');
+    }, 2500);
+}
+
+// Enhanced evacuation route display function
+function showEvacuationRoutes() {
+    showToast('Loading safe evacuation route mapping...', 'processing', 1500);
+    
+    setTimeout(() => {
+        scrollToSection('alerts');
+        showToast('Evacuation route system activated. Click alerts to generate routes.', 'success');
+    }, 1500);
+}
+
 // Open field dashboard function
 function openFieldDashboard() {
     showToast('Opening Field Officer Dashboard...', 'processing', 1500);

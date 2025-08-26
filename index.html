@@ -24,7 +24,7 @@
                 <a href="#home" class="nav-link active">Dashboard</a>
                 <a href="#fire-risk" class="nav-link">Risk Analysis</a>
                 <a href="#fire-simulation" class="nav-link">Simulation</a>
-                <a href="#alerts" class="nav-link">Alerts</a>
+                <a href="#alerts" class="nav-link">Alerts & Evacuation</a>
                 <a href="#data-sources" class="nav-link">Data Sources</a>
                 <a href="#analytics" class="nav-link">Analytics</a>
             </nav>
@@ -204,8 +204,8 @@
                                 <i class="fas fa-route"></i>
                             </div>
                             <div class="action-text">
-                                <span class="action-title">Evacuation Routes</span>
-                                <span class="action-subtitle">Safe evacuation paths</span>
+                                <span class="action-title">Alert & Evacuation</span>
+                                <span class="action-subtitle">Integrated warning system</span>
                             </div>
                         </button>
                     </div>
@@ -568,62 +568,179 @@
         </div>
     </section>
 
-    <!-- Alerts Section -->
+    <!-- Enhanced Alert & Evacuation System -->
     <section id="alerts" class="section">
         <div class="section-header">
-            <h2>Alert System</h2>
-            <p>Real-time Fire Risk Warnings and Notifications</p>
+            <h2>Early Warning & Alert System</h2>
+            <p>Real-time Fire Risk Warnings, Mobile Alerts, and Safe Evacuation Routes</p>
         </div>
         <div class="section-content">
-            <div class="alerts-container">
-                <div class="alerts-list">
-                    <div class="alert-item critical">
-                        <div class="alert-icon">
-                            <i class="fas fa-exclamation-triangle"></i>
+            <div class="analytics-grid">
+                <!-- Mobile Alert Dashboard -->
+                <div class="analytics-card">
+                    <h3>📱 Mobile Alert Dashboard</h3>
+                    <p class="chart-description">Real-time SMS/WhatsApp alerts for field officers</p>
+                    <div class="alert-system-status">
+                        <div class="status-item">
+                            <div class="status-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <div class="status-info">
+                                <span class="status-label">Field Officers Connected</span>
+                                <span class="status-value">23/25</span>
+                            </div>
                         </div>
-                        <div class="alert-content">
-                            <div class="alert-title">Critical Fire Risk Warning</div>
-                            <div class="alert-description">High fire danger in Nainital District due to dry conditions and strong winds</div>
-                            <div class="alert-time">15 minutes ago</div>
+                        <div class="status-item">
+                            <div class="status-icon">
+                                <i class="fas fa-sms"></i>
+                            </div>
+                            <div class="status-info">
+                                <span class="status-label">SMS Alerts Sent (24h)</span>
+                                <span class="status-value">147</span>
+                            </div>
                         </div>
-                        <div class="alert-status">ACTIVE</div>
+                        <div class="status-item">
+                            <div class="status-icon">
+                                <i class="fas fa-whatsapp"></i>
+                            </div>
+                            <div class="status-info">
+                                <span class="status-label">WhatsApp Alerts</span>
+                                <span class="status-value">89</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="alert-item warning">
-                        <div class="alert-icon">
-                            <i class="fas fa-fire"></i>
-                        </div>
-                        <div class="alert-content">
-                            <div class="alert-title">Active Fire Detected</div>
-                            <div class="alert-description">Small fire spotted near Jim Corbett National Park - monitoring for spread</div>
-                            <div class="alert-time">1 hour ago</div>
-                        </div>
-                        <div class="alert-status">MONITORING</div>
-                    </div>
-                    <div class="alert-item info">
-                        <div class="alert-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="alert-content">
-                            <div class="alert-title">Evacuation Recommendation</div>
-                            <div class="alert-description">Precautionary evacuation advised for villages near Almora forest areas</div>
-                            <div class="alert-time">3 hours ago</div>
-                        </div>
-                        <div class="alert-status">ADVISORY</div>
+                    <div class="alert-controls">
+                        <button class="action-btn primary" onclick="sendTestAlert()">
+                            <i class="fas fa-paper-plane"></i>
+                            Send Test Alert
+                        </button>
+                        <button class="action-btn" onclick="openFieldDashboard()">
+                            <i class="fas fa-mobile-alt"></i>
+                            Open Mobile Dashboard
+                        </button>
                     </div>
                 </div>
-                <div class="alert-actions">
-                    <button class="action-btn primary">
-                        <i class="fas fa-download"></i>
-                        Export GeoTIFF
-                    </button>
-                    <button class="action-btn">
-                        <i class="fas fa-file-export"></i>
-                        Export Shapefiles
-                    </button>
-                    <button class="action-btn">
-                        <i class="fas fa-bell"></i>
-                        Alert Settings
-                    </button>
+
+                <!-- Safe Evacuation Routes -->
+                <div class="analytics-card">
+                    <h3>🛣️ Safe Evacuation Routes</h3>
+                    <p class="chart-description">AI-generated evacuation paths to nearest safe zones</p>
+                    <div class="evacuation-summary">
+                        <div class="evacuation-stat">
+                            <span class="evacuation-label">Primary Routes</span>
+                            <span class="evacuation-value">12 Active</span>
+                        </div>
+                        <div class="evacuation-stat">
+                            <span class="evacuation-label">Safe Zones</span>
+                            <span class="evacuation-value">8 Available</span>
+                        </div>
+                        <div class="evacuation-stat">
+                            <span class="evacuation-label">Avg. Distance</span>
+                            <span class="evacuation-value">4.2 km</span>
+                        </div>
+                    </div>
+                    <div class="evacuation-routes-preview">
+                        <div class="route-item">
+                            <i class="fas fa-route"></i>
+                            <span>Nainital → Bhowali (Primary)</span>
+                            <span class="route-distance">3.2 km</span>
+                        </div>
+                        <div class="route-item">
+                            <i class="fas fa-route"></i>
+                            <span>Almora → Ranikhet (Secondary)</span>
+                            <span class="route-distance">5.8 km</span>
+                        </div>
+                    </div>
+                    <div class="evacuation-controls">
+                        <button class="action-btn primary" onclick="showAllEvacuationRoutes()">
+                            <i class="fas fa-map-marked-alt"></i>
+                            View All Routes
+                        </button>
+                        <button class="action-btn" onclick="generateNewRoutes()">
+                            <i class="fas fa-sync-alt"></i>
+                            Update Routes
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Real-time Alerts List -->
+                <div class="analytics-card full-width">
+                    <h3>🚨 Live Alert Feed</h3>
+                    <div class="alerts-container">
+                        <div class="alerts-list">
+                            <div class="alert-item critical">
+                                <div class="alert-icon">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="alert-content">
+                                    <div class="alert-title">Critical Fire Risk Warning</div>
+                                    <div class="alert-description">High fire danger in Nainital District due to dry conditions and strong winds</div>
+                                    <div class="alert-actions-inline">
+                                        <span class="alert-time">15 minutes ago</span>
+                                        <button class="alert-action-btn" onclick="sendEvacuationAlert('nainital')">
+                                            <i class="fas fa-route"></i> Generate Evacuation
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="alert-status">ACTIVE</div>
+                            </div>
+                            <div class="alert-item warning">
+                                <div class="alert-icon">
+                                    <i class="fas fa-fire"></i>
+                                </div>
+                                <div class="alert-content">
+                                    <div class="alert-title">Active Fire Detected</div>
+                                    <div class="alert-description">Small fire spotted near Jim Corbett National Park - monitoring for spread</div>
+                                    <div class="alert-actions-inline">
+                                        <span class="alert-time">1 hour ago</span>
+                                        <button class="alert-action-btn" onclick="sendEvacuationAlert('corbett')">
+                                            <i class="fas fa-route"></i> Show Evacuation Routes
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="alert-status">MONITORING</div>
+                            </div>
+                            <div class="alert-item info">
+                                <div class="alert-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="alert-content">
+                                    <div class="alert-title">Evacuation Recommendation</div>
+                                    <div class="alert-description">Precautionary evacuation advised for villages near Almora forest areas</div>
+                                    <div class="alert-actions-inline">
+                                        <span class="alert-time">3 hours ago</span>
+                                        <button class="alert-action-btn" onclick="trackEvacuation('almora')">
+                                            <i class="fas fa-map-marker-alt"></i> Track Progress
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="alert-status">ADVISORY</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alert Management Actions -->
+                <div class="analytics-card">
+                    <h3>Alert Management</h3>
+                    <div class="alert-actions">
+                        <button class="action-btn primary">
+                            <i class="fas fa-download"></i>
+                            Export GeoTIFF
+                        </button>
+                        <button class="action-btn">
+                            <i class="fas fa-file-export"></i>
+                            Export Shapefiles
+                        </button>
+                        <button class="action-btn">
+                            <i class="fas fa-bell"></i>
+                            Alert Settings
+                        </button>
+                        <button class="action-btn">
+                            <i class="fas fa-chart-bar"></i>
+                            Alert Analytics
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
