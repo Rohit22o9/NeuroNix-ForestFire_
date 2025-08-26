@@ -4094,6 +4094,9 @@ main {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(10px);
     transition: all 0.3s ease;
+    max-height: 800px;
+    overflow-y: visible;
+    position: relative;
 }
 
 .environmental-card:hover {
@@ -4179,6 +4182,8 @@ main {
     border-radius: 12px;
     padding: 15px;
     margin-bottom: 20px;
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 .breakdown-item {
@@ -4187,6 +4192,7 @@ main {
     align-items: center;
     padding: 8px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    flex-shrink: 0;
 }
 
 .breakdown-item:last-child {
@@ -4213,12 +4219,15 @@ main {
 .emissions-chart-container {
     height: 200px;
     position: relative;
+    flex-shrink: 0;
 }
 
 /* Ecological Impact Styles */
 .impact-categories {
     display: grid;
     gap: 20px;
+    max-height: 500px;
+    overflow-y: auto;
 }
 
 .impact-category {
@@ -4227,6 +4236,7 @@ main {
     padding: 20px;
     border-left: 4px solid transparent;
     transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 
 .impact-category.flora {
@@ -4274,6 +4284,7 @@ main {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 8px;
     padding: 12px;
+    flex-shrink: 0;
 }
 
 .metric-label {
