@@ -11,6 +11,14 @@ import time
 app = Flask(__name__)
 CORS(app)
 
+# Import alert system
+try:
+    from alert_system import alert_system
+    ALERT_SYSTEM_AVAILABLE = True
+except ImportError:
+    ALERT_SYSTEM_AVAILABLE = False
+    print("Alert system not available")
+
 # Global variables for real-time data simulation
 current_predictions = {}
 simulation_cache = {}
@@ -105,11 +113,24 @@ def predict_fire_risk():
         # Get ML predictions
         predictions = get_model_predictions(env_data)
         
+        # Check if alert should be triggered
+        if ALERT_SYSTEM_AVAILABLE and predictions.get('ensemble_risk_score', 0) > 0.7:
+            region = data.get('region', 'Unknown Region')
+            risk_score = predictions['ensemble_risk_score']
+            risk_level = 'very-high' if risk_score > 0.85 else 'high'
+            
+            # Trigger alert through alert system
+            try:
+                alert_system._trigger_alert(region, risk_level, risk_score)
+            except Exception as e:
+                print(f"Failed to trigger alert: {e}")
+        
         return jsonify({
             'success': True,
             'predictions': predictions,
             'input_data': env_data,
-            'timestamp': datetime.now().isoformat()
+            'timestamp': datetime.now().isoformat(),
+            'alert_triggered': ALERT_SYSTEM_AVAILABLE and predictions.get('ensemble_risk_score', 0) > 0.7
         })
         
     except Exception as e:
@@ -273,6 +294,42 @@ def start_realtime():
             'success': True,
             'message': 'Real-time prediction service started',
             'status': 'active'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+# Alert system integration endpoints
+@app.route('/api/alerts/dashboard')
+def redirect_to_dashboard():
+    """Redirect to mobile dashboard"""
+    return jsonify({
+        'success': True,
+        'dashboard_url': '/field-dashboard',
+        'message': 'Use /field-dashboard for mobile alert dashboard'
+    })
+
+@app.route('/api/alerts/test', methods=['POST'])
+def test_alert_system():
+    """Test the alert system"""
+    if not ALERT_SYSTEM_AVAILABLE:
+        return jsonify({
+            'success': False,
+            'error': 'Alert system not available'
+        }), 503
+    
+    try:
+        data = request.get_json()
+        region = data.get('region', 'Test Region')
+        risk_score = data.get('risk_score', 0.8)
+        
+        alert_system._trigger_alert(region, 'high', risk_score)
+        
+        return jsonify({
+            'success': True,
+            'message': f'Test alert sent for {region}'
         })
     except Exception as e:
         return jsonify({

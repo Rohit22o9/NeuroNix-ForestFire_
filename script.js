@@ -1727,6 +1727,16 @@ function downloadReport() {
     }, 2000);
 }
 
+// Open field dashboard function
+function openFieldDashboard() {
+    showToast('Opening Field Officer Dashboard...', 'processing', 1500);
+    
+    setTimeout(() => {
+        window.open('/field-dashboard', '_blank');
+        showToast('Field dashboard opened in new tab', 'success');
+    }, 1500);
+}
+
 // Enhanced keyboard shortcuts
 document.addEventListener('keydown', function(e) {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
