@@ -621,45 +621,77 @@
                     </div>
                 </div>
 
-                <!-- Safe Evacuation Routes -->
-                <div class="analytics-card">
+                <!-- Safe Evacuation Routes with Dedicated Map -->
+                <div class="analytics-card evacuation-card-with-map">
                     <h3>🛣️ Safe Evacuation Routes</h3>
                     <p class="chart-description">AI-generated evacuation paths to nearest safe zones</p>
-                    <div class="evacuation-summary">
-                        <div class="evacuation-stat">
-                            <span class="evacuation-label">Primary Routes</span>
-                            <span class="evacuation-value">12 Active</span>
+                    <div class="evacuation-content">
+                        <!-- Left side: Map -->
+                        <div class="evacuation-map-container">
+                            <div id="evacuation-map" class="evacuation-map"></div>
+                            <div class="evacuation-map-controls">
+                                <button class="evacuation-control-btn" onclick="showAllEvacuationRoutesOnMap()">
+                                    <i class="fas fa-route"></i>
+                                    Show All Routes
+                                </button>
+                                <button class="evacuation-control-btn" onclick="clearEvacuationRoutes()">
+                                    <i class="fas fa-times"></i>
+                                    Clear Routes
+                                </button>
+                            </div>
                         </div>
-                        <div class="evacuation-stat">
-                            <span class="evacuation-label">Safe Zones</span>
-                            <span class="evacuation-value">8 Available</span>
+                        
+                        <!-- Right side: Route Details and Controls -->
+                        <div class="evacuation-details">
+                            <div class="evacuation-summary">
+                                <div class="evacuation-stat">
+                                    <span class="evacuation-label">Primary Routes</span>
+                                    <span class="evacuation-value">12 Active</span>
+                                </div>
+                                <div class="evacuation-stat">
+                                    <span class="evacuation-label">Safe Zones</span>
+                                    <span class="evacuation-value">8 Available</span>
+                                </div>
+                                <div class="evacuation-stat">
+                                    <span class="evacuation-label">Avg. Distance</span>
+                                    <span class="evacuation-value">4.2 km</span>
+                                </div>
+                            </div>
+                            
+                            <div class="evacuation-routes-preview">
+                                <div class="route-item">
+                                    <i class="fas fa-route"></i>
+                                    <span>Nainital → Bhowali (Primary)</span>
+                                    <span class="route-distance">3.2 km</span>
+                                </div>
+                                <div class="route-item">
+                                    <i class="fas fa-route"></i>
+                                    <span>Almora → Ranikhet (Secondary)</span>
+                                    <span class="route-distance">5.8 km</span>
+                                </div>
+                                <div class="route-item">
+                                    <i class="fas fa-route"></i>
+                                    <span>Dehradun → Mussoorie (Backup)</span>
+                                    <span class="route-distance">4.8 km</span>
+                                </div>
+                                <div class="route-item">
+                                    <i class="fas fa-route"></i>
+                                    <span>Haridwar → Roorkee (Emergency)</span>
+                                    <span class="route-distance">6.1 km</span>
+                                </div>
+                            </div>
+                            
+                            <div class="evacuation-controls">
+                                <button class="action-btn primary" onclick="generateNewRoutes()">
+                                    <i class="fas fa-sync-alt"></i>
+                                    Update Routes
+                                </button>
+                                <button class="action-btn" onclick="exportEvacuationData()">
+                                    <i class="fas fa-download"></i>
+                                    Export Data
+                                </button>
+                            </div>
                         </div>
-                        <div class="evacuation-stat">
-                            <span class="evacuation-label">Avg. Distance</span>
-                            <span class="evacuation-value">4.2 km</span>
-                        </div>
-                    </div>
-                    <div class="evacuation-routes-preview">
-                        <div class="route-item">
-                            <i class="fas fa-route"></i>
-                            <span>Nainital → Bhowali (Primary)</span>
-                            <span class="route-distance">3.2 km</span>
-                        </div>
-                        <div class="route-item">
-                            <i class="fas fa-route"></i>
-                            <span>Almora → Ranikhet (Secondary)</span>
-                            <span class="route-distance">5.8 km</span>
-                        </div>
-                    </div>
-                    <div class="evacuation-controls">
-                        <button class="action-btn primary" onclick="showAllEvacuationRoutes()">
-                            <i class="fas fa-map-marked-alt"></i>
-                            View All Routes
-                        </button>
-                        <button class="action-btn" onclick="generateNewRoutes()">
-                            <i class="fas fa-sync-alt"></i>
-                            Update Routes
-                        </button>
                     </div>
                 </div>
 

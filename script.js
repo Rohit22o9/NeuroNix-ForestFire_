@@ -1,10 +1,12 @@
 // Global variables
 let riskMap;
 let simulationMap;
+let evacuationMap;
 let isSimulationRunning = false;
 let simulationTime = 0;
 let simulationInterval;
 let fireSpreadLayers = [];
+let evacuationRouteLayers = [];
 
 // ML API endpoints
 const ML_API_BASE = window.location.origin.replace(':5000', ':5001');
@@ -231,6 +233,19 @@ function initializeMaps() {
 
             // Add forest areas
             addForestAreas();
+        }
+
+        // Evacuation Map
+        const evacuationMapElement = document.getElementById('evacuation-map');
+        if (evacuationMapElement) {
+            evacuationMap = L.map('evacuation-map').setView([30.0668, 79.0193], 8);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(evacuationMap);
+
+            // Add safe zones and evacuation routes
+            initializeEvacuationMap();
         }
 
         // Initialize search functionality for maps
@@ -1779,26 +1794,220 @@ function trackEvacuation(region) {
     }, 1500);
 }
 
-function showAllEvacuationRoutes() {
-    showToast('Displaying all active evacuation routes...', 'processing', 1500);
+// Initialize evacuation map with safe zones and routes
+function initializeEvacuationMap() {
+    if (!evacuationMap) return;
+    
+    // Add safe zones (hospitals, schools, government buildings)
+    const safeZones = [
+        { name: 'Nainital District Hospital', lat: 29.3919, lng: 79.4542, type: 'hospital' },
+        { name: 'Government Inter College Nainital', lat: 29.3806, lng: 79.4422, type: 'school' },
+        { name: 'Almora District Hospital', lat: 29.5967, lng: 79.6653, type: 'hospital' },
+        { name: 'Forest Research Institute Dehradun', lat: 30.3356, lng: 78.0436, type: 'government' },
+        { name: 'AIIMS Rishikesh', lat: 30.0869, lng: 78.2676, type: 'hospital' },
+        { name: 'Haridwar Railway Station', lat: 29.9458, lng: 78.1642, type: 'transport' }
+    ];
+    
+    safeZones.forEach(zone => {
+        const iconClass = {
+            'hospital': 'fas fa-hospital',
+            'school': 'fas fa-school',
+            'government': 'fas fa-landmark',
+            'transport': 'fas fa-train'
+        };
+        
+        const iconColor = {
+            'hospital': '#ef4444',
+            'school': '#3b82f6',
+            'government': '#10b981',
+            'transport': '#f59e0b'
+        };
+        
+        const marker = L.marker([zone.lat, zone.lng], {
+            icon: L.divIcon({
+                className: 'safe-zone-marker',
+                html: `<i class="${iconClass[zone.type]}" style="color: ${iconColor[zone.type]}; font-size: 16px;"></i>`,
+                iconSize: [30, 30],
+                iconAnchor: [15, 15]
+            })
+        }).addTo(evacuationMap);
+        
+        marker.bindPopup(`
+            <div class="evacuation-popup">
+                <h4><i class="${iconClass[zone.type]}"></i> ${zone.name}</h4>
+                <p><strong>Type:</strong> ${zone.type.charAt(0).toUpperCase() + zone.type.slice(1)}</p>
+                <p><strong>Status:</strong> Available</p>
+            </div>
+        `);
+    });
+    
+    // Initially show sample evacuation routes
+    showSampleEvacuationRoutes();
+}
+
+function showSampleEvacuationRoutes() {
+    if (!evacuationMap) return;
+    
+    // Sample evacuation routes
+    const sampleRoutes = [
+        {
+            name: 'Nainital → Bhowali Emergency Route',
+            coordinates: [[29.3806, 79.4422], [29.3767, 79.4160], [29.3650, 79.3980]],
+            color: '#10b981',
+            type: 'primary'
+        },
+        {
+            name: 'Almora → Ranikhet Evacuation',
+            coordinates: [[29.6500, 79.6667], [29.6400, 79.5500], [29.6400, 79.4100]],
+            color: '#f59e0b',
+            type: 'secondary'
+        },
+        {
+            name: 'Dehradun → Mussoorie Safe Route',
+            coordinates: [[30.3165, 78.0322], [30.3800, 78.0500], [30.4571, 78.0654]],
+            color: '#3b82f6',
+            type: 'backup'
+        }
+    ];
+    
+    sampleRoutes.forEach(route => {
+        const routeLine = L.polyline(route.coordinates, {
+            color: route.color,
+            weight: 4,
+            opacity: 0.8,
+            dashArray: route.type === 'primary' ? null : '10, 5'
+        }).addTo(evacuationMap);
+        
+        routeLine.bindPopup(`
+            <div class="evacuation-popup">
+                <h4><i class="fas fa-route"></i> ${route.name}</h4>
+                <p><strong>Type:</strong> ${route.type.charAt(0).toUpperCase() + route.type.slice(1)} Route</p>
+                <p><strong>Status:</strong> Active</p>
+                <p><strong>Distance:</strong> ${(Math.random() * 3 + 2).toFixed(1)} km</p>
+            </div>
+        `);
+        
+        evacuationRouteLayers.push(routeLine);
+    });
+}
+
+function showAllEvacuationRoutesOnMap() {
+    showToast('Displaying all active evacuation routes on dedicated map...', 'processing', 1500);
     
     setTimeout(() => {
-        // Generate multiple evacuation routes for demonstration
-        if (simulationMap) {
-            // Clear existing routes
-            if (evacuationRouteLayer) {
-                simulationMap.removeLayer(evacuationRouteLayer);
-            }
-            
-            // Generate routes for major cities
-            generateEvacuationRoutes(29.3806, 79.4422, 5); // Nainital
-            setTimeout(() => generateEvacuationRoutes(29.6500, 79.6667, 4), 500); // Almora
-            setTimeout(() => generateEvacuationRoutes(30.3165, 78.0322, 6), 1000); // Dehradun
-        }
+        // Clear existing routes
+        clearEvacuationRoutes();
         
-        scrollToSection('fire-simulation');
-        showToast('All evacuation routes displayed on simulation map', 'success');
+        // Add more comprehensive evacuation routes
+        const allRoutes = [
+            {
+                name: 'Nainital Emergency Evacuation',
+                coordinates: [[29.3806, 79.4422], [29.3767, 79.4160], [29.3650, 79.3980], [29.3500, 79.3800]],
+                color: '#10b981',
+                type: 'primary'
+            },
+            {
+                name: 'Almora to Safety Zone',
+                coordinates: [[29.6500, 79.6667], [29.6400, 79.5500], [29.6300, 79.4800], [29.6400, 79.4100]],
+                color: '#f59e0b',
+                type: 'secondary'
+            },
+            {
+                name: 'Dehradun Quick Escape',
+                coordinates: [[30.3165, 78.0322], [30.3400, 78.0400], [30.3800, 78.0500], [30.4571, 78.0654]],
+                color: '#3b82f6',
+                type: 'backup'
+            },
+            {
+                name: 'Haridwar Emergency Route',
+                coordinates: [[29.9457, 78.1642], [29.9600, 78.1500], [29.9800, 78.1300]],
+                color: '#ef4444',
+                type: 'emergency'
+            },
+            {
+                name: 'Rishikesh Evacuation Path',
+                coordinates: [[30.0869, 78.2676], [30.1000, 78.2500], [30.1200, 78.2300]],
+                color: '#8b5cf6',
+                type: 'alternate'
+            }
+        ];
+        
+        allRoutes.forEach(route => {
+            const routeLine = L.polyline(route.coordinates, {
+                color: route.color,
+                weight: 4,
+                opacity: 0.8,
+                dashArray: route.type === 'primary' ? null : '8, 4'
+            }).addTo(evacuationMap);
+            
+            routeLine.bindPopup(`
+                <div class="evacuation-popup">
+                    <h4><i class="fas fa-route"></i> ${route.name}</h4>
+                    <p><strong>Route Type:</strong> ${route.type.charAt(0).toUpperCase() + route.type.slice(1)}</p>
+                    <p><strong>Status:</strong> Active & Clear</p>
+                    <p><strong>Estimated Distance:</strong> ${(Math.random() * 4 + 2).toFixed(1)} km</p>
+                    <p><strong>Travel Time:</strong> ${Math.floor(Math.random() * 20 + 10)} minutes</p>
+                </div>
+            `);
+            
+            evacuationRouteLayers.push(routeLine);
+        });
+        
+        // Update route statistics
+        updateEvacuationStats();
+        showToast('All evacuation routes displayed on evacuation map', 'success');
     }, 1500);
+}
+
+function clearEvacuationRoutes() {
+    if (evacuationMap && evacuationRouteLayers.length > 0) {
+        evacuationRouteLayers.forEach(layer => {
+            evacuationMap.removeLayer(layer);
+        });
+        evacuationRouteLayers = [];
+        showToast('Evacuation routes cleared', 'processing', 1000);
+    }
+}
+
+function updateEvacuationStats() {
+    // Update the route statistics in the UI
+    const routeStats = document.querySelectorAll('.evacuation-stat .evacuation-value');
+    if (routeStats.length >= 3) {
+        routeStats[0].textContent = evacuationRouteLayers.length + ' Active';
+        routeStats[1].textContent = '12 Available';
+        routeStats[2].textContent = (3.8 + (Math.random() - 0.5)).toFixed(1) + ' km';
+    }
+}
+
+function exportEvacuationData() {
+    showToast('Exporting evacuation routes data...', 'processing', 2000);
+    
+    setTimeout(() => {
+        const evacuationData = {
+            timestamp: new Date().toISOString(),
+            routes: evacuationRouteLayers.length,
+            safeZones: 12,
+            status: 'active',
+            coverage: '85% of Uttarakhand districts'
+        };
+        
+        const dataStr = JSON.stringify(evacuationData, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(dataBlob);
+        link.download = `evacuation-routes-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showToast('Evacuation data exported successfully!', 'success');
+    }, 2000);
+}
+
+function showAllEvacuationRoutes() {
+    // This function now just calls the dedicated map function
+    showAllEvacuationRoutesOnMap();
 }
 
 function generateNewRoutes() {
