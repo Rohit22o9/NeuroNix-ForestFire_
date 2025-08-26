@@ -955,6 +955,165 @@ body::after {
     gap: 1.5rem;
 }
 
+/* Environmental Impact Styles */
+.environmental-overview {
+    display: grid;
+    gap: 2rem;
+    max-width: 100%;
+}
+
+.environmental-metrics-card,
+.ecological-impact-card {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 2rem;
+    backdrop-filter: blur(10px);
+}
+
+.environmental-metrics-card h3,
+.ecological-impact-card h3 {
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.emission-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.emission-stat {
+    background: rgba(255, 107, 53, 0.1);
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.emission-stat:hover {
+    transform: translateY(-2px);
+}
+
+.emission-icon {
+    background: rgba(255, 107, 53, 0.2);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff6b35;
+    font-size: 1.2rem;
+}
+
+.emission-details {
+    flex: 1;
+}
+
+.emission-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #ff6b35;
+    margin-bottom: 0.3rem;
+}
+
+.emission-label {
+    color: #94A3B8;
+    font-size: 0.9rem;
+}
+
+.impact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.impact-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.impact-item:hover {
+    border-color: rgba(255, 107, 53, 0.3);
+    background: rgba(255, 107, 53, 0.05);
+}
+
+.impact-item h4 {
+    color: #ffffff;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.impact-item h4 i {
+    color: #ff6b35;
+}
+
+.impact-severity {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    background: rgba(156, 163, 175, 0.2);
+    color: #9CA3AF;
+}
+
+.impact-severity.low {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22C55E;
+}
+
+.impact-severity.moderate {
+    background: rgba(245, 158, 11, 0.2);
+    color: #F59E0B;
+}
+
+.impact-severity.high {
+    background: rgba(239, 68, 68, 0.2);
+    color: #EF4444;
+}
+
+.impact-severity.severe {
+    background: rgba(220, 38, 38, 0.2);
+    color: #DC2626;
+}
+
+.impact-description {
+    color: #E2E8F0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* Fix main layout to prevent white space */
+main {
+    min-height: calc(100vh - 140px);
+    padding-bottom: 2rem;
+}
+
+.section {
+    margin-bottom: 0;
+    min-height: auto;
+}
+
+.section:last-child {
+    padding-bottom: 2rem;
+}
+
 .resource-stat {
     display: flex;
     align-items: center;
